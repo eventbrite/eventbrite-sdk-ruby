@@ -6,6 +6,15 @@ module EventbriteSDK
       EventbriteSDK.token = 'token'
     end
 
+    describe 'errors' do
+      it 'exposes the correct error types as constants' do
+        expect(described_class::ERROR_CANNOT_UNPUBLISH).
+          to eq('CANNOT_UNPUBLISH')
+        expect(described_class::ERROR_ALREADY_PUBLISHED_OR_DELETED).
+          to eq('ALREADY_PUBLISHED_OR_DELETED')
+      end
+    end
+
     describe '.search' do
       context 'when found' do
         it 'returns a list of events' do
