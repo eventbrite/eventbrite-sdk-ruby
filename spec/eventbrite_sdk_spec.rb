@@ -11,6 +11,14 @@ describe EventbriteSDK do
     expect(described_class::VERSION).not_to be nil
   end
 
+  it 'exposes general use error constants with correct values' do
+    expect(described_class::ERROR_ALREADY_DELETED).to eq('ALREADY_DELETED')
+    expect(described_class::ERROR_BAD_PAGE).to eq('BAD_PAGE')
+    expect(described_class::ERROR_BAD_TOKEN).to eq('INVALID_AUTH')
+    expect(described_class::ERROR_NOT_FOUND).to eq('NOT_FOUND')
+    expect(described_class::ERROR_TOKEN_REQUIRED).to eq('NO_AUTH')
+  end
+
   describe '::BASE' do
     it 'returns uri with MAJOR version after the `v`' do
       major = described_class::VERSION.split('.').first
