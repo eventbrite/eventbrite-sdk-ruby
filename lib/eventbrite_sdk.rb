@@ -3,6 +3,7 @@ require 'set'
 require 'rest_client'
 
 require 'eventbrite_sdk/version'
+require 'eventbrite_sdk/error_types'
 require 'eventbrite_sdk/exceptions'
 require 'eventbrite_sdk/resource/operations/attribute_schema'
 require 'eventbrite_sdk/resource/operations/list'
