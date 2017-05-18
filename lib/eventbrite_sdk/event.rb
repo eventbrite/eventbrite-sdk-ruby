@@ -1,6 +1,6 @@
 module EventbriteSDK
   class Event < Resource
-    ERROR_CANNOT_PUBLISH = 'CANNOT_UNPUBLISH'.freeze
+    ERROR_CANNOT_UNPUBLISH = 'CANNOT_UNPUBLISH'.freeze
     ERROR_ALREADY_PUBLISHED_OR_DELETED = 'ALREADY_PUBLISHED_OR_DELETED'.freeze
 
     # Defines event#cancel, event#publish, and event#unpublish
