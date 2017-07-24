@@ -9,6 +9,25 @@ module EventbriteSDK
       end
     end
 
+    describe '#concat' do
+      it 'calls given object#concat with self#to_ary' do
+        payload = { 'events' => [ { 'id' => '1' } ] }
+
+        request = double('Request', get: payload)
+
+        list = described_class.new(
+          url_base: 'url',
+          object_class: Event,
+          key: :events,
+          request: request
+        )
+
+        list.retrieve
+
+        expect(list.concat([1])).to eq([1] + list.to_ary)
+      end
+    end
+
     describe '#retrieve' do
       context 'when query is set on initialization' do
         it 'calls request with query' do

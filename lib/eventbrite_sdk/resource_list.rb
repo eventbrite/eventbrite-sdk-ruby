@@ -20,6 +20,10 @@ module EventbriteSDK
       @url_base = url_base
     end
 
+    def concat(other)
+      other.concat(to_ary)
+    end
+
     def retrieve(query: {})
       @query.merge!(query)
       load_response
@@ -47,6 +51,10 @@ module EventbriteSDK
 
     %w(object_count page_number page_size page_count).each do |method|
       define_method(method) { pagination[method] }
+    end
+
+    def to_ary
+      objects
     end
 
     def to_json(opts = {})
