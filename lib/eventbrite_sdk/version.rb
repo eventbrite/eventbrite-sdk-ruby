@@ -1,5 +1,5 @@
 module EventbriteSDK
   # Major should always line up with the major point release of the public API
   # v3 => 3.x.x
-  VERSION = '3.0.8'.freeze
+  VERSION = '3.0.9'.freeze
 end
