@@ -20,11 +20,9 @@ module EventbriteSDK
       @url_base = url_base
     end
 
-    def retrieve
-      response = load_response
-
-      @objects = (response[key.to_s] || []).map { |raw| object_class.new(raw) }
-      @pagination = response['pagination']
+    def retrieve(query: {})
+      @query.merge!(query)
+      load_response
 
       self
     end
@@ -72,7 +70,13 @@ module EventbriteSDK
     end
 
     def load_response
-      request.get(url: url_base, query: query.merge(page: page_number))
+      response = request.get(
+        url: url_base,
+        query: query.merge(page: page_number)
+      )
+
+      @objects = (response[key.to_s] || []).map { |raw| object_class.new(raw) }
+      @pagination = response['pagination']
     end
 
     attr_reader :expansion,

@@ -117,6 +117,69 @@ module EventbriteSDK
           expect(list).to be_empty
         end
       end
+
+      context 'when :query is given' do
+        it 'merges the given values with what was given during instantiation' do
+          request = double('Request', get: {})
+          list = described_class.new(
+            query: { test: 'foo' },
+            request: request,
+            url_base: 'fart'
+          )
+
+          list.retrieve(query: { sun: 'glasses' })
+
+          expect(request).to have_received(:get).with(
+            url: 'fart',
+            query: {
+              test: 'foo',
+              page: 1,
+              sun: 'glasses'
+            }
+          )
+        end
+
+        context 'and #next_page is called after the initial custom query' do
+          it 'requests the next page with the custom :query values' do
+            request = double(
+              'Request',
+              get: {
+                'pagination' => {
+                  'page_number' => 1,
+                  'page_count' => 2
+                }
+              }
+            )
+            list = described_class.new(
+              query: { test: 'foo' },
+              request: request,
+              url_base: 'fart'
+            )
+
+            list.retrieve(query: { sun: 'glasses' })
+
+            expect(request).to have_received(:get).with(
+              url: 'fart',
+              query: {
+                test: 'foo',
+                page: 1,
+                sun: 'glasses'
+              }
+            )
+
+            list.next_page
+
+            expect(request).to have_received(:get).with(
+              url: 'fart',
+              query: {
+                test: 'foo',
+                page: 2,
+                sun: 'glasses'
+              }
+            )
+          end
+        end
+      end
     end
 
     context 'pagination' do
