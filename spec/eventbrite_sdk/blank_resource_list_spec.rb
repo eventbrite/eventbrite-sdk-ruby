@@ -4,6 +4,14 @@ module EventbriteSDK
   RSpec.describe BlankResourceList do
     subject { described_class.new(key: 'key') }
 
+    describe '#concat' do
+      it 'returns what was given' do
+        result = subject.concat([1])
+
+        expect(result).to eq [1]
+      end
+    end
+
     describe '#next_page' do
       it 'returns itself' do
         expect(subject.next_page).to eq(subject)
