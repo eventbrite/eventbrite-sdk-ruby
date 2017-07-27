@@ -4,7 +4,7 @@ module EventbriteSDK
     extend Forwardable
     include Enumerable
 
-    def_delegators :@objects, :[], :each, :empty?
+    def_delegators :@objects, :[], :concat, :each, :empty?, :to_ary
 
     def initialize(key: nil)
       @key = key
@@ -17,6 +17,10 @@ module EventbriteSDK
       retrieve
     ).each do |method|
       define_method(method) { self }
+    end
+
+    def concat(other)
+      other.concat(to_ary)
     end
 
     def page(_num)
