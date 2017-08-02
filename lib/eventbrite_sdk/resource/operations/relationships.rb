@@ -36,13 +36,11 @@ module EventbriteSDK
           # object_class: String representation of resource
           #               e.g. 'Event' => EventbriteSDK::Event
           #
-          def belongs_to(rel_method, object_class: nil)
+          def belongs_to(rel_method, object_class:)
             define_method(rel_method) do
-              query = { id: public_send(:"#{rel_method}_id") }
-
-              relationships[rel_method] ||= begin
-                resource_class_from_string(object_class).retrieve(query)
-              end
+              relationships[rel_method] ||= build_relative(
+                rel_method, object_class
+              )
             end
           end
 
@@ -111,8 +109,23 @@ module EventbriteSDK
 
           private
 
+          def build_relative(name, klass)
+            relation_class = resource_class_from_string(klass)
+            relative_attrs = attrs.respond_to?(name) && attrs.public_send(name)
+
+            if relative_attrs
+              relation_class.new(relative_attrs)
+            else
+              relation_class.retrieve(id: public_send(:"#{name}_id"))
+            end
+          end
+
           def relationships
             @_relationships ||= {}
+          end
+
+          def reset_memoized_relationships
+            @_relationships = {}
           end
         end
 

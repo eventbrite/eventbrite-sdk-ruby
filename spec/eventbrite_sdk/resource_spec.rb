@@ -43,6 +43,34 @@ module EventbriteSDK
         EventbriteSDK.token = 'token'
       end
 
+      it 'resets memoized relationships' do
+        dumdum_attrs = { id: 'dumdum2', name: { html: 'foo' } }
+        event_attrs = {
+          id: 'dummy1',
+          dumdum: dumdum_attrs,
+          dumdum_id: 'dumdum2'
+        }
+        updated_event_attrs = {
+          id: 'dummy1',
+          dumdum: dumdum_attrs.merge(name: { html: 'bar' }),
+          dumdum_id: 'dumdum2'
+        }
+        dummy = DummyResource.new(event_attrs)
+
+        # Stub the get request
+        stub_get(
+          path: 'events/dummy1',
+          fixture: :event_read,
+          override: updated_event_attrs
+        )
+
+        dummy.dumdum   # force the relative to be instantiated
+        dummy.refresh! # trigger the reload, which should reset relationships
+
+        # When accessed again, it should refresh the relative
+        expect(dummy.dumdum.name.html).to eq('bar')
+      end
+
       context 'when a id exists' do
         it 'reloads the instance from the return of the api' do
           stub_get(path: 'events/1', fixture: :event_read)
@@ -72,6 +100,37 @@ module EventbriteSDK
     describe '#save' do
       before do
         EventbriteSDK.token = 'token'
+      end
+
+      it 'resets memoized relationships' do
+        dumdum_attrs = { id: 'dumdum2', name: { html: 'foo' } }
+        event_attrs = {
+          id: 'dummy1',
+          dumdum: dumdum_attrs,
+          dumdum_id: 'dumdum2'
+        }
+        updated_event_attrs = {
+          id: 'dummy1',
+          dumdum: dumdum_attrs.merge(name: { html: 'bar' }),
+          dumdum_id: 'dumdum2'
+        }
+        dummy = DummyResource.new(event_attrs)
+
+        # Stub the save request
+        stub_post_with_response(
+          path: 'events/dummy1',
+          fixture: :event_created,
+          override: updated_event_attrs
+        )
+
+        allow(Dumdum).to receive(:new).and_call_original
+
+        dummy.dumdum # force the relative to be instantiated
+        dummy.assign_attributes('name.html' => 'foo')
+        dummy.save   # trigger the save and reload, which should reset relationships
+
+        # When accessed again, it should refresh the relative
+        expect(dummy.dumdum.name.html).to eq('bar')
       end
 
       context 'with a new resource' do
@@ -253,7 +312,20 @@ module EventbriteSDK
     class DummyResource < Resource
       resource_path 'events/:id'
 
+      belongs_to :dumdum, object_class: 'Dumdum'
+
       attributes_prefix 'event'
+
+      schema_definition do
+        string 'name.html'
+        string 'dumdum_id'
+      end
+    end
+
+    class Dumdum < Resource
+      resource_path 'dumdum/:id'
+
+      attributes_prefix 'dumdum'
 
       schema_definition do
         string 'name.html'
