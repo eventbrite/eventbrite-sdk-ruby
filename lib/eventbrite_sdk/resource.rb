@@ -94,6 +94,7 @@ module EventbriteSDK
 
     def reload(hydrated_attrs = {})
       build_attrs(hydrated_attrs)
+      reset_memoized_relationships
     end
   end
 end

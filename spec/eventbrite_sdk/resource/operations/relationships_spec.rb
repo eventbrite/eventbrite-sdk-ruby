@@ -6,9 +6,52 @@ module EventbriteSDK
       RSpec.describe Relationships do
         describe '.belongs_to' do
           it 'defines a method that calls .retrieve on a matching class' do
+            hydrated_attrs = double(Attributes)
             wheel = TestRelations::Wheel.new
+            allow(wheel).to receive(:attrs).and_return(hydrated_attrs)
 
-            expect(wheel.car).to eq(id: 'car_id')
+            allow(TestRelations::Car).to receive(:retrieve).and_call_original
+
+            expect(wheel.car).to eq(id: wheel.car_id)
+            expect(TestRelations::Car).
+              to have_received(:retrieve).
+              with(id: wheel.car_id)
+          end
+
+          context 'when the object has attributes describing the related object' do
+            it 'uses the local data instead of making an external request' do
+              hydrated_attrs = double(
+                Attributes,
+                car: {
+                  'id' => 'abc',
+                  'name' => 'testy mctestface'
+                }
+              )
+              wheel = TestRelations::Wheel.new
+              allow(wheel).to receive(:attrs).and_return(hydrated_attrs)
+
+              allow(TestRelations::Car).to receive(:new).and_return(:car)
+
+              expect(wheel.car).to be(:car)
+              expect(TestRelations::Car).
+                to have_received(:new).
+                with(hydrated_attrs.car)
+            end
+          end
+
+          context 'when the related object attributes entry is nil' do
+            it 'makes an external request to retrieve it' do
+              hydrated_attrs = double(Attributes, car: nil)
+              wheel = TestRelations::Wheel.new
+              allow(wheel).to receive(:attrs).and_return(hydrated_attrs)
+
+              allow(TestRelations::Car).to receive(:retrieve).and_return(:car)
+
+              expect(wheel.car).to be(:car)
+              expect(TestRelations::Car).
+                to have_received(:retrieve).
+                with(id: wheel.car_id)
+            end
           end
         end
 
