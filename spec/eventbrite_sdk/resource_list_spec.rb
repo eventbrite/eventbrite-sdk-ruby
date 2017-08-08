@@ -31,13 +31,17 @@ module EventbriteSDK
     describe '#retrieve' do
       context 'when query is set on initialization' do
         it 'calls request with query' do
+          api_token = 'api_token'
           request = double('Request', get: {})
 
-          described_class.new(request: request, query: { event_id: 1 }).retrieve
+          described_class.
+            new(request: request, query: { event_id: 1 }).
+            retrieve(api_token: api_token)
 
           expect(request).to have_received(:get).with(
             url: nil,
-            query: { event_id: 1, page: 1 }
+            query: { event_id: 1, page: 1 },
+            api_token: api_token
           )
         end
       end
@@ -52,7 +56,8 @@ module EventbriteSDK
 
           expect(request).to have_received(:get).with(
             url: nil,
-            query: { page: 1, expand: 'organizer,event,event.venue' }
+            query: { page: 1, expand: 'organizer,event,event.venue' },
+            api_token: nil
           )
         end
 
@@ -71,7 +76,8 @@ module EventbriteSDK
 
             expect(request).to have_received(:get).with(
               url: nil,
-              query: { page: 2, expand: 'organizer,event,event.venue' }
+              query: { page: 2, expand: 'organizer,event,event.venue' },
+              api_token: nil
             )
           end
         end
@@ -99,7 +105,7 @@ module EventbriteSDK
           list.retrieve
 
           expect(request).to have_received(:get).with(
-            url: 'url', query: { page: 1 }
+            url: 'url', query: { page: 1 }, api_token: nil
           )
           expect(list.first).to be_an_instance_of(Event)
 
@@ -131,7 +137,7 @@ module EventbriteSDK
           list.retrieve
 
           expect(request).to have_received(:get).with(
-            url: 'url', query: { page: 1 }
+            url: 'url', query: { page: 1 }, api_token: nil
           )
           expect(list).to be_empty
         end
@@ -154,7 +160,8 @@ module EventbriteSDK
               test: 'foo',
               page: 1,
               sun: 'glasses'
-            }
+            },
+            api_token: nil
           )
         end
 
@@ -183,7 +190,8 @@ module EventbriteSDK
                 test: 'foo',
                 page: 1,
                 sun: 'glasses'
-              }
+              },
+              api_token: nil
             )
 
             list.next_page
@@ -194,7 +202,8 @@ module EventbriteSDK
                 test: 'foo',
                 page: 2,
                 sun: 'glasses'
-              }
+              },
+              api_token: nil
             )
           end
         end
@@ -252,7 +261,7 @@ module EventbriteSDK
         list.page(2)
 
         expect(request).to have_received(:get).with(
-          url: 'url', query: { page: 2 }
+          url: 'url', query: { page: 2 }, api_token: nil
         )
       end
 
@@ -281,11 +290,13 @@ module EventbriteSDK
 
         expect(request).to have_received(:get).with(
           url: 'url',
-          query: { page: page_number }
+          query: { page: page_number },
+          api_token: nil
         )
         expect(request).to have_received(:get).with(
           url: 'url',
-          query: { page: page_number + 1 }
+          query: { page: page_number + 1 },
+          api_token: nil
         )
       end
 
@@ -314,11 +325,13 @@ module EventbriteSDK
 
         expect(request).to have_received(:get).with(
           url: 'url',
-          query: { page: page_number }
+          query: { page: page_number },
+          api_token: nil
         )
         expect(request).to have_received(:get).with(
           url: 'url',
-          query: { page: page_number - 1 }
+          query: { page: page_number - 1 },
+          api_token: nil
         )
       end
     end

@@ -208,10 +208,12 @@ module EventbriteSDK
           resource = described_class.new('id' => '1234')
           repo = double(post: { 'id' => '1234' })
 
-          resource.save('postfix', repo)
+          resource.save('postfix', request: repo)
 
           expect(repo).to have_received(:post).with(
-            url: 'events/1234/postfix', payload: {}
+            api_token: nil,
+            url: 'events/1234/postfix',
+            payload: {}
           )
         end
       end

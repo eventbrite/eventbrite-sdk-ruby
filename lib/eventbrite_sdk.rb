@@ -116,19 +116,28 @@ module EventbriteSDK
   end
 
   def self.request(params)
-    query = params.delete(:query)
+    req = format_request(params)
+    req[:url] = url(params[:url].gsub(%r{\/$}, ''))
+    req[:verify_ssl] = verify_ssl?
 
-    params[:url] = url(params[:url].gsub(/\/$/, ''))
-    params[:headers]['Authorization'] = "Bearer #{token}" if token
-    params[:headers][:params] = query if query
-    params[:verify_ssl] = verify_ssl?
-
-    response = RestClient::Request.execute(params)
+    response = RestClient::Request.execute(req)
 
     JSON.parse(response.body) unless response.body == ''
   rescue *EXCEPTION_MAP.keys => err
     handler = EXCEPTION_MAP[err.class]
     raise handler[:class].new(handler[:message], err.response)
+  end
+
+  def self.format_request(params)
+    query = params.delete(:query)
+    request_token = params.delete(:api_token)
+
+    auth = request_token || token
+
+    params[:headers]['Authorization'] = "Bearer #{auth}" if auth
+    params[:headers][:params] = query if query
+
+    params
   end
 
   def self.url(path)

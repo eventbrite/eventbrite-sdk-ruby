@@ -56,7 +56,7 @@ describe EventbriteSDK do
   end
 
   describe '.get' do
-    context 'with token' do
+    context 'with module token' do
       it 'sets the Authorization header with the given api token' do
         token = 'token'
         described_class.token = token
@@ -64,6 +64,26 @@ describe EventbriteSDK do
         allow(RestClient::Request).to receive(:execute).and_return(response)
 
         described_class.get(url: 'events/1')
+
+        expect(RestClient::Request).to have_received(:execute).with(
+          method: :get,
+          url: "#{described_class::BASE}/events/1/",
+          headers: {
+            'Accept' => 'application/json',
+            'Authorization' => "Bearer #{token}"
+          },
+          verify_ssl: true
+        )
+      end
+    end
+
+    context 'with request token' do
+      it 'sets the Authorization header with the given api token' do
+        token = 'request_token'
+        response = double(body: { hey: 'there' }.to_json)
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+
+        described_class.get(url: 'events/1', api_token: token)
 
         expect(RestClient::Request).to have_received(:execute).with(
           method: :get,
@@ -102,7 +122,7 @@ describe EventbriteSDK do
   end
 
   describe '.post' do
-    context 'with token' do
+    context 'with module token' do
       it 'sets Content-Type, Authorization headers with the given api token' do
         token = 'token'
         described_class.token = token
@@ -112,6 +132,33 @@ describe EventbriteSDK do
         allow(RestClient::Request).to receive(:execute).and_return(response)
 
         described_class.post(payload: payload, url: 'events/1')
+
+        expect(RestClient::Request).to have_received(:execute).with(
+          headers: {
+            'Content-Type' => 'application/json',
+            'Authorization' => "Bearer #{token}"
+          },
+          method: :post,
+          payload: payload.to_json,
+          url: "#{described_class::BASE}/events/1/",
+          verify_ssl: true,
+        )
+      end
+    end
+
+    context 'with request token' do
+      it 'sets the Authorization header with the given api token' do
+        token = 'request_token'
+        response = double(body: { hey: 'there' }.to_json)
+        payload = { 'name' => 'foo' }
+
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+
+        described_class.post(
+          payload: payload,
+          url: 'events/1',
+          api_token: token
+        )
 
         expect(RestClient::Request).to have_received(:execute).with(
           headers: {
@@ -170,6 +217,72 @@ describe EventbriteSDK do
           url: "#{described_class::BASE}/events/1/publish/",
           verify_ssl: true,
         )
+      end
+    end
+  end
+
+  describe '.delete' do
+    context 'with module token' do
+      it 'sets the Authorization header with the given api token' do
+        token = 'token'
+        described_class.token = token
+        response = double(body: '')
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+
+        described_class.delete(url: 'events/1')
+
+        expect(RestClient::Request).to have_received(:execute).with(
+          method: :delete,
+          url: "#{described_class::BASE}/events/1/",
+          headers: {
+            'Accept' => 'application/json',
+            'Authorization' => "Bearer #{token}"
+          },
+          verify_ssl: true
+        )
+      end
+    end
+
+    context 'with request token' do
+      it 'sets the Authorization header with the given api token' do
+        token = 'request_token'
+        response = double(body: '')
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+
+        described_class.delete(url: 'events/1', api_token: token)
+
+        expect(RestClient::Request).to have_received(:execute).with(
+          method: :delete,
+          url: "#{described_class::BASE}/events/1/",
+          headers: {
+            'Accept' => 'application/json',
+            'Authorization' => "Bearer #{token}"
+          },
+          verify_ssl: true
+        )
+      end
+    end
+
+    context 'with a bad token' do
+      it 'sets the Authorization header with the given api token' do
+        stub_endpoint(path: 'events/1', method: :delete, status: 401)
+
+        token = 'token'
+        described_class.token = token
+
+        expect do
+          described_class.delete(url: 'events/1')
+        end.to raise_error(described_class::Unauthorized)
+      end
+    end
+
+    context 'without token' do
+      it 'raises EventbriteSDK::AuthenticationError' do
+        stub_endpoint(path: 'events/1', status: 401, body: :no_token)
+
+        expect do
+          described_class.get(url: 'events/1')
+        end.to raise_error(described_class::Unauthorized)
       end
     end
   end
