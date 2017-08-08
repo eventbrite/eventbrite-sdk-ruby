@@ -24,29 +24,29 @@ module EventbriteSDK
       other.concat(to_ary)
     end
 
-    def retrieve(query: {})
+    def retrieve(query: {}, api_token: nil)
       @query.merge!(query)
-      load_response
+      load_response(api_token)
 
       self
     end
 
-    def page(num)
+    def page(num, api_token: nil)
       pagination['page_number'] = num
 
-      retrieve
+      retrieve(api_token: api_token)
     end
 
-    def next_page
-      pagination['page_number'] += 1 unless page_number >= (page_count || 1)
+    def next_page(api_token: nil)
+      return if page_number >= (page_count || 1)
 
-      retrieve
+      page(pagination['page_number'] + 1, api_token: api_token)
     end
 
-    def prev_page
-      pagination['page_number'] -= 1 unless page_number <= 1
+    def prev_page(api_token: nil)
+      return if page_number <= 1
 
-      retrieve
+      page(pagination['page_number'] - 1, api_token: api_token)
     end
 
     %w(object_count page_number page_size page_count).each do |method|
@@ -77,10 +77,11 @@ module EventbriteSDK
       @pagination ||= { 'page_count' => 1, 'page_number' => 1 }
     end
 
-    def load_response
+    def load_response(api_token)
       response = request.get(
         url: url_base,
-        query: query.merge(page: page_number)
+        query: query.merge(page: page_number),
+        api_token: api_token
       )
 
       @objects = (response[key.to_s] || []).map { |raw| object_class.new(raw) }

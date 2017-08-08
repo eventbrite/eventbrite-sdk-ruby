@@ -118,6 +118,38 @@ order = EventbriteSDK::Order.retrieve(id: id, expand: [:attendees, :event])
 
 ```
 
+# Per-request Configuration
+
+For apps that need to use multiple tokens during the lifetime of a process, it is 
+possible to set a per-request token:
+
+``` ruby
+
+# Retrieving
+
+EventbriteSDK::Order.retrieve(
+  id: id,
+  api_token: YOUR_REQUEST_TOKEN
+)
+
+# Retrieving lists
+
+events = EventbriteSDK::User.me.owned_events.page(1, api_token: YOUR_REQUEST_TOKEN)
+
+events.next_page(api_token: YOUR_REQUEST_TOKEN)
+
+# Saving/Deleting
+
+event.save(api_token: YOUR_REQUEST_TOKEN)
+
+order.delete(api_token: YOUR_REQUEST_TOKEN)
+
+```
+
+If you forget to provide the api_token key and `EventbriteSDK.token` is set, the request
+will fall-back on the global token for the action called.
+
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.

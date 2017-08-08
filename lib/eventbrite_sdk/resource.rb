@@ -50,9 +50,9 @@ module EventbriteSDK
       !id
     end
 
-    def refresh!(request = EventbriteSDK)
+    def refresh!(request: EventbriteSDK, api_token: nil)
       unless new?
-        reload request.get(url: path)
+        reload request.get(url: path, api_token: api_token)
       else
         false
       end
@@ -62,10 +62,11 @@ module EventbriteSDK
       "#<#{self.class}: #{JSON.pretty_generate(@attrs.to_h)}>"
     end
 
-    def save(postfixed_path = '', request = EventbriteSDK)
+    def save(postfixed_path = '', api_token: nil, request: EventbriteSDK)
       if changed? || !postfixed_path.empty?
         response = request.post(url: path(postfixed_path),
-                                payload: attrs.payload(self.class.prefix))
+                                payload: attrs.payload(self.class.prefix),
+                                api_token: api_token)
 
         reload(response)
 
@@ -77,9 +78,8 @@ module EventbriteSDK
       attrs.to_json(opts)
     end
 
-    def delete(request = EventbriteSDK)
-      response = request.delete(url: path)
-      response['deleted']
+    def delete(request: EventbriteSDK, api_token: nil)
+      request.delete(url: path, api_token: api_token)['deleted']
     end
 
     def read_attribute_for_serialization(attribute)
