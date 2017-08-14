@@ -80,7 +80,7 @@ module EventbriteSDK
     def load_response(api_token)
       response = request.get(
         url: url_base,
-        query: query.merge(page: page_number),
+        query: { page: page_number }.merge(query),
         api_token: api_token
       )
 
