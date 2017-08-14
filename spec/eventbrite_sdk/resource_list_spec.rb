@@ -149,13 +149,13 @@ module EventbriteSDK
           list = described_class.new(
             query: { test: 'foo' },
             request: request,
-            url_base: 'fart'
+            url_base: 'testbase'
           )
 
           list.retrieve(query: { sun: 'glasses' })
 
           expect(request).to have_received(:get).with(
-            url: 'fart',
+            url: 'testbase',
             query: {
               test: 'foo',
               page: 1,
@@ -163,6 +163,29 @@ module EventbriteSDK
             },
             api_token: nil
           )
+        end
+
+        context 'and :page is given in the query' do
+          it 'overrides the current page' do
+            request = double('Request', get: {})
+            list = described_class.new(
+              query: { test: 'foo' },
+              request: request,
+              url_base: 'testbase'
+            )
+
+            list.retrieve(query: { page: 100, sun: 'glasses' })
+
+            expect(request).to have_received(:get).with(
+              url: 'testbase',
+              query: {
+                test: 'foo',
+                page: 100,
+                sun: 'glasses'
+              },
+              api_token: nil
+            )
+          end
         end
 
         context 'and #next_page is called after the initial custom query' do
@@ -179,13 +202,13 @@ module EventbriteSDK
             list = described_class.new(
               query: { test: 'foo' },
               request: request,
-              url_base: 'fart'
+              url_base: 'testbase'
             )
 
             list.retrieve(query: { sun: 'glasses' })
 
             expect(request).to have_received(:get).with(
-              url: 'fart',
+              url: 'testbase',
               query: {
                 test: 'foo',
                 page: 1,
@@ -197,7 +220,7 @@ module EventbriteSDK
             list.next_page
 
             expect(request).to have_received(:get).with(
-              url: 'fart',
+              url: 'testbase',
               query: {
                 test: 'foo',
                 page: 2,
