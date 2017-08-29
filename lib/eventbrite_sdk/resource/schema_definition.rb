@@ -1,10 +1,12 @@
+require 'byebug'
 module EventbriteSDK
   class Resource
     class SchemaDefinition
       def initialize(resource_name)
-        @resource_name = resource_name
-        @read_only_keys = Set.new
         @attrs = {}
+        @read_only_keys = Set.new
+        @resource_name = resource_name
+        @formatter = load_formatter
       end
 
       %i(boolean currency datetime integer string).each do |method|
@@ -31,6 +33,16 @@ module EventbriteSDK
       private
 
       attr_reader :read_only_keys, :resource_name, :attrs
+
+      def load_formatter
+        formatter_klass = resource_name.sub(
+          /::(.+)/, '::Formatters::\1Formatter'
+        )
+
+        EventbriteSDK.const_get(formatter_klass).new
+      rescue NameError
+        EventbriteSDK::Formatters::BaseFormatter.new
+      end
 
       def read_only?(key)
         read_only_keys.member?(key)
