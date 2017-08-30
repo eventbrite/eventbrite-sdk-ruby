@@ -391,11 +391,11 @@ module EventbriteSDK
         expect(list_json).to eq(
           'events' => [
             {
-              'name' => { 'html' => nil },
-              'description' => { 'html' => nil },
+              'name' => { 'html' => nil, 'text' => nil },
+              'description' => { 'html' => nil, 'text' => nil },
               'organizer_id' => nil,
-              'start' => { 'utc' => nil, 'timezone' => nil },
-              'end' => { 'utc' => nil, 'timezone' => nil },
+              'start' => { 'local' => nil, 'timezone' => nil, 'utc' => nil },
+              'end' => { 'local' => nil, 'timezone' => nil, 'utc' => nil },
               'hide_start_date' => nil,
               'hide_end_date' => nil,
               'currency' => nil,
@@ -419,11 +419,11 @@ module EventbriteSDK
               'id' => '1'
             },
             {
-              'name' => { 'html' => nil },
-              'description' => { 'html' => nil },
+              'name' => { 'html' => nil, 'text' => nil },
+              'description' => { 'html' => nil, 'text' => nil },
               'organizer_id' => nil,
-              'start' => { 'utc' => nil, 'timezone' => nil },
-              'end' => { 'utc' => nil, 'timezone' => nil },
+              'start' => { 'local' => nil, 'timezone' => nil, 'utc' => nil },
+              'end' => { 'local' => nil, 'timezone' => nil, 'utc' => nil },
               'hide_start_date' => nil,
               'hide_end_date' => nil,
               'currency' => nil,
@@ -447,11 +447,11 @@ module EventbriteSDK
               'id' => '2'
             },
             {
-              'name' => { 'html' => nil },
-              'description' => { 'html' => nil },
+              'name' => { 'html' => nil, 'text' => nil },
+              'description' => { 'html' => nil, 'text' => nil },
               'organizer_id' => nil,
-              'start' => { 'utc' => nil, 'timezone' => nil },
-              'end' => { 'utc' => nil, 'timezone' => nil },
+              'start' => { 'local' => nil, 'timezone' => nil, 'utc' => nil },
+              'end' => { 'local' => nil, 'timezone' => nil, 'utc' => nil },
               'hide_start_date' => nil,
               'hide_end_date' => nil,
               'currency' => nil,

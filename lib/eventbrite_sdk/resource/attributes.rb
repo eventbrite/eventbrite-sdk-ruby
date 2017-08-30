@@ -10,16 +10,13 @@ module EventbriteSDK
       end
 
       def initialize(hydrated_attrs = {}, schema = NullSchemaDefinition.new)
-        @attrs = {}
         @changes = {}
         @schema = schema
 
         # Build out initial hash based on schema's defined keys
-        schema.defined_keys.each do |key|
-          bury_attribute(ValueChange.new(key, nil))
-        end
-
-        @attrs = attrs.merge(stringify_keys(hydrated_attrs))
+        @attrs = schema.defined_keys.each_with_object({}) do |key, attrs|
+          Field.new(key, nil).bury(attrs)
+        end.merge(stringify_keys(hydrated_attrs))
       end
 
       def [](key)
@@ -28,8 +25,8 @@ module EventbriteSDK
 
       def assign_attributes(new_attrs)
         stringify_keys(new_attrs).each do |attribute_key, value|
-          value = ValueChange.new(attribute_key, value)
-          assign_value(value) if schema.writeable?(attribute_key)
+          value = Field.new(attribute_key, value, schema: schema)
+          changes.merge! value.apply(attrs, changes)
         end
 
         nil
@@ -53,7 +50,7 @@ module EventbriteSDK
 
       def reset!
         changes.each do |attribute_key, (old_value, _current_value)|
-          bury_attribute(ValueChange.new(attribute_key, old_value))
+          Field.new(attribute_key, old_value).bury(attrs)
         end
 
         @changes = {}
@@ -66,12 +63,12 @@ module EventbriteSDK
       # prefix: This is needed due to inconsistencies in the EB API
       #         Sometimes there's a prefix, sometimes there's not,
       #         sometimes it's singular, sometimes it's plural.
-      #         Once the API gets a bit more nomalized we can remove this
-      #         alltogether and infer a prefix based
+      #         Once the API gets a bit more normalized we can remove this
+      #         altogether and infer a prefix based
       #         on the class name of the resource
       def payload(prefix = nil)
         changes.each_with_object({}) do |(attribute_key, (_, value)), payload|
-          bury(ValueChange.new(attribute_key, value, prefix: prefix), payload)
+          Field.new(attribute_key, value, prefix: prefix).bury(payload)
         end
       end
 
@@ -83,35 +80,10 @@ module EventbriteSDK
 
       attr_reader :schema
 
-      def assign_value(value)
-        apply_changeset(value)
-        bury_attribute(value)
-      end
-
-      def apply_changeset(value)
-        changes.merge! value.diff(attrs, changes)
-      end
-
-      def bury_attribute(value)
-        bury(value, attrs)
-      end
-
-      def bury(value, hash = {})
-        keys = value.key.split '.'
-
-        # Hand rolling #bury
-        # hopefully we get it in the next release of Ruby
-        keys.each_cons(2).reduce(hash) do |prev_attrs, (key, _)|
-          prev_attrs[key] ||= {}
-        end[keys.last] = value.value
-
-        hash
-      end
-
       def method_missing(method_name, *_args, &_block)
         requested_key = method_name.to_s
 
-        if attrs.has_key?(requested_key)
+        if attrs.key?(requested_key)
           handle_requested_attr(attrs[requested_key])
         else
           super
@@ -119,7 +91,7 @@ module EventbriteSDK
       end
 
       def respond_to_missing?(method_name, _include_private = false)
-        attrs.has_key?(method_name.to_s) || super
+        attrs.key?(method_name.to_s) || super
       end
 
       def handle_requested_attr(value)

@@ -27,7 +27,7 @@ module EventbriteSDK
     #   !new? && EventbriteSDK.post(url: path('unpublish'))
     # end
     def self.define_api_actions(*actions)
-      req = ->(inst, postfix) do
+      req = lambda do |inst, postfix|
         inst.instance_eval { !new? && EventbriteSDK.post(url: path(postfix)) }
       end
 
@@ -51,10 +51,10 @@ module EventbriteSDK
     end
 
     def refresh!(request: EventbriteSDK, api_token: nil)
-      unless new?
-        reload request.get(url: path, api_token: api_token)
-      else
+      if new?
         false
+      else
+        reload request.get(url: path, api_token: api_token)
       end
     end
 
@@ -63,15 +63,15 @@ module EventbriteSDK
     end
 
     def save(postfixed_path = '', api_token: nil, request: EventbriteSDK)
-      if changed? || !postfixed_path.empty?
-        response = request.post(url: path(postfixed_path),
-                                payload: attrs.payload(self.class.prefix),
-                                api_token: api_token)
+      return unless changed? || !postfixed_path.empty?
 
-        reload(response)
+      response = request.post(url: path(postfixed_path),
+                              payload: attrs.payload(self.class.prefix),
+                              api_token: api_token)
 
-        true
-      end
+      reload(response)
+
+      true
     end
 
     def to_json(opts = {})

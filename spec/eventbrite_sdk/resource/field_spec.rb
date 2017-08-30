@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module EventbriteSDK
   class Resource
-    RSpec.describe ValueChange do
+    RSpec.describe Field do
       describe '#key' do
         context 'when prefix is provided' do
           it 'prefixes #key' do
@@ -21,10 +21,10 @@ module EventbriteSDK
         end
       end
 
-      describe '#diff' do
+      describe '#changes' do
         context 'when key given has a sibling' do
           context 'and the sibling exists in given attrs' do
-            it 'does not add the sibling to returned diff' do
+            it 'does not add the sibling to returned changes' do
               attrs = {
                 'exist' => {
                   'timezone' => 'old value'
@@ -35,16 +35,16 @@ module EventbriteSDK
               }
               changeset = described_class.new('exist.timezone', 'new value')
 
-              diff = changeset.diff(attrs, existing_changes)
+              changes = changeset.changes(attrs, existing_changes)
 
-              expect(diff).to eq(
+              expect(changes).to eq(
                 'exist.timezone' => ['old value', 'new value']
               )
             end
           end
 
           context 'and the sibling does not exist in given attrs' do
-            it 'adds the sibling to returned diff' do
+            it 'adds the sibling to returned changes' do
               attrs = {
                 'exist' => {
                   'utc' => 'old value',
@@ -54,9 +54,9 @@ module EventbriteSDK
               existing_changes = {}
               changeset = described_class.new('exist.utc', 'new value')
 
-              diff = changeset.diff(attrs, existing_changes)
+              changes = changeset.changes(attrs, existing_changes)
 
-              expect(diff).to eq(
+              expect(changes).to eq(
                 'exist.timezone' => ['dupe me', 'dupe me'],
                 'exist.utc' => ['old value', 'new value']
               )
@@ -73,9 +73,9 @@ module EventbriteSDK
             }
             changeset = described_class.new('one.two', 'new value')
 
-            diff = changeset.diff(attrs, {})
+            changes = changeset.changes(attrs, {})
 
-            expect(diff).to eq('one.two' => ['old value', 'new value'])
+            expect(changes).to eq('one.two' => ['old value', 'new value'])
           end
         end
       end

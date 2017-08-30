@@ -6,7 +6,7 @@ module EventbriteSDK
     #
     # When an event has an id the POST is made, otherwise we return false
     # POSTS to order/:id/(resend_confirmation_email|refunds)
-    define_api_actions :resend_confirmation_email, { refund: :refunds }
+    define_api_actions :resend_confirmation_email, refund: :refunds
 
     has_many :attendees, object_class: 'Attendee'
     belongs_to :event, object_class: 'Event'
@@ -17,8 +17,8 @@ module EventbriteSDK
       string 'last_name'
       string 'email'
       string 'costs'
-      datetime 'created', read_only: true
-      datetime 'changed', read_only: true
+      utc 'created', read_only: true
+      utc 'changed', read_only: true
       string 'resource_uri', read_only: true
     end
   end

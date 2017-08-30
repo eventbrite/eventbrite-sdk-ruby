@@ -27,7 +27,7 @@ module EventbriteSDK
     end
 
     # Skip for next PR
-    xdescribe '#changes' do
+    describe '#changes' do
       context 'when the same cost is set to the POST value' do
         it 'is not in the changeset' do
           ticket = described_class.new(
@@ -39,7 +39,7 @@ module EventbriteSDK
           )
 
           # This is technically the same value.
-          ticket.assign_attributes cost: 'USD,423'
+          ticket.assign_attributes cost: 'USD,432'
 
           expect(ticket.changes.keys).not_to include('cost')
         end

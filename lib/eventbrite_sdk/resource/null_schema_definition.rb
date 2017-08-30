@@ -8,6 +8,10 @@ module EventbriteSDK
       def defined_keys
         []
       end
+
+      def dirty_comparable(field)
+        field.initial_value
+      end
     end
   end
 end

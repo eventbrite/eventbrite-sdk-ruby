@@ -5,16 +5,22 @@ module EventbriteSDK
       def initialize(resource_name)
         @attrs = {}
         @read_only_keys = Set.new
+        @comparable = FieldComparable.new
         @resource_name = resource_name
-        @formatter = load_formatter
       end
 
-      %i(boolean currency datetime integer string).each do |method|
+      %i[
+        boolean
+        currency
+        datetime
+        integer
+        multipart
+        string
+        utc
+      ].each do |method|
         define_method(method) do |value, *opts|
-          options = opts.first
-
-          @read_only_keys << value if options && options[:read_only]
-          @attrs[value] = method
+          add_field_options(opts, value, method)
+          add_field(opts, value, method)
         end
       end
 
@@ -30,18 +36,43 @@ module EventbriteSDK
         attrs.keys
       end
 
+      def dirty_comparable(field)
+        comparable.value_for(attrs[field.key], field)
+      end
+
       private
 
-      attr_reader :read_only_keys, :resource_name, :attrs
+      attr_reader :comparable ,:read_only_keys, :resource_name, :attrs
 
-      def load_formatter
-        formatter_klass = resource_name.sub(
-          /::(.+)/, '::Formatters::\1Formatter'
-        )
+      def add_field_options(opts, value, _method)
+        options = opts.first
+        @read_only_keys << value if options && options[:read_only]
+      end
 
-        EventbriteSDK.const_get(formatter_klass).new
-      rescue NameError
-        EventbriteSDK::Formatters::BaseFormatter.new
+      def add_field(_options, value, method)
+        @attrs[value] = method
+        send(:"#{method}_expansion", value)
+      end
+
+      # The following fields are NO-OP expansions
+      %i[boolean integer multipart string utc].each do |type|
+        define_method("#{type}_expansion") { |val| }
+      end
+
+      def currency_expansion(value)
+        generic_expansion(%w[currency display value], value)
+      end
+
+      def datetime_expansion(value)
+        generic_expansion(%w[local utc timezone], value)
+      end
+
+      def multipart_expansion(value)
+        generic_expansion(%i[html text], value)
+      end
+
+      def generic_expansion(types, value)
+        types.map { |exp| @attrs["#{value}.#{exp}"] = :string }
       end
 
       def read_only?(key)
