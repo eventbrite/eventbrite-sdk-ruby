@@ -1,15 +1,14 @@
 module EventbriteSDK
   class Report
-    STRING_KEYS = %i(
+    STRING_KEYS = %i[
       start_date
       end_date
       date_facet
       event_status
       timezone
       group_by
-    ).freeze
-
-    VALID_REPORTS = %i(attendees sales).freeze
+    ].freeze
+    VALID_REPORTS = %i[attendees sales].freeze
 
     def initialize
       @query = {}

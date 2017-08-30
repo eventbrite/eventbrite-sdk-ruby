@@ -8,8 +8,8 @@ module EventbriteSDK
 
     schema_definition do
       string 'name'
-      string 'description.html'
-      string 'long_description.html'
+      multipart 'description'
+      multipart 'long_description'
       string 'logo.id'
       string 'website'
       string 'twitter'

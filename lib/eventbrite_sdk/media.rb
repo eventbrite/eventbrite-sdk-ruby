@@ -1,7 +1,6 @@
 module EventbriteSDK
   # This module implements media upload to Eventbrite based on:
   # https://docs.evbhome.com/apidocs/reference/uploads/?highlight=logo
-
   class Media < Resource
     resource_path 'media/:id'
 
@@ -11,7 +10,7 @@ module EventbriteSDK
       event_logo: 'image-event-logo',
       organizer_logo: 'image-organizer-logo',
       user_photo: 'image-user-photo',
-      event_view_from_seat: 'image-event-view-from-seat',
+      event_view_from_seat: 'image-event-view-from-seat'
     }.freeze
 
     schema_definition do
@@ -46,9 +45,7 @@ module EventbriteSDK
       type = VALID_TYPES[image_type]
 
       unless type
-        raise ArgumentError.new(
-          "image_type needs to be one of #{VALID_TYPES.keys}"
-        )
+        raise ArgumentError, "image_type needs to be one of #{VALID_TYPES.keys}"
       end
 
       request.get(url: path('upload'), query: { type: type })
@@ -58,7 +55,7 @@ module EventbriteSDK
       RestClient.post(
         instructions['upload_url'],
         instructions['upload_data'].merge(file: file),
-        multipart: true,
+        multipart: true
       )
     end
 

@@ -86,6 +86,7 @@ module EventbriteSDK
           schema = double(
             'schema',
             writeable?: true,
+            dirty_comparable: nil,
             defined_keys: ['name.html']
           )
 
@@ -105,6 +106,7 @@ module EventbriteSDK
           schema = double(
             'schema',
             writeable?: true,
+            dirty_comparable: nil,
             defined_keys: ['name.html']
           )
           allow(schema).to receive(:writeable?).and_return(true, false)

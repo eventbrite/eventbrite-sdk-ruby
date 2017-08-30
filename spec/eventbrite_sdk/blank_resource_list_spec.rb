@@ -47,5 +47,11 @@ module EventbriteSDK
         expect(subject.to_json).to eq('{"key":[]}')
       end
     end
+
+    describe '#object_count' do
+      it 'returns zero' do
+        expect(subject.object_count).to be_zero
+      end
+    end
   end
 end

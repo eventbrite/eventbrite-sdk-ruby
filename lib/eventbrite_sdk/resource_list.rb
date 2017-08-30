@@ -49,7 +49,7 @@ module EventbriteSDK
       page(pagination['page_number'] - 1, api_token: api_token)
     end
 
-    %w(object_count page_number page_size page_count).each do |method|
+    %w[object_count page_number page_size page_count].each do |method|
       define_method(method) { pagination[method] }
     end
 
@@ -73,6 +73,14 @@ module EventbriteSDK
 
     private
 
+    attr_reader :expansion,
+                :key,
+                :object_class,
+                :objects,
+                :query,
+                :request,
+                :url_base
+
     def pagination
       @pagination ||= { 'page_count' => 1, 'page_number' => 1 }
     end
@@ -87,13 +95,5 @@ module EventbriteSDK
       @objects = (response[key.to_s] || []).map { |raw| object_class.new(raw) }
       @pagination = response['pagination']
     end
-
-    attr_reader :expansion,
-                :key,
-                :object_class,
-                :objects,
-                :query,
-                :request,
-                :url_base
   end
 end

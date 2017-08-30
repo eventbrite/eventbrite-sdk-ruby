@@ -5,7 +5,6 @@ require 'rest_client'
 require 'eventbrite_sdk/version'
 require 'eventbrite_sdk/error_types'
 require 'eventbrite_sdk/exceptions'
-require 'eventbrite_sdk/formatters/base_formatter'
 require 'eventbrite_sdk/resource/operations/attribute_schema'
 require 'eventbrite_sdk/resource/operations/list'
 require 'eventbrite_sdk/resource/operations/endpoint'
@@ -15,7 +14,8 @@ require 'eventbrite_sdk/resource/null_schema_definition'
 require 'eventbrite_sdk/resource/schema_definition'
 require 'eventbrite_sdk/blank_resource_list'
 require 'eventbrite_sdk/resource'
-require 'eventbrite_sdk/resource/value_change'
+require 'eventbrite_sdk/resource/field'
+require 'eventbrite_sdk/resource/field_comparable'
 require 'eventbrite_sdk/resource_list'
 
 require 'eventbrite_sdk/lists/owned_event_orders_list'
@@ -38,23 +38,23 @@ module EventbriteSDK
   EXCEPTION_MAP = {
     RestClient::ResourceNotFound => {
       class: ResourceNotFound,
-      message: 'requested object was not found',
+      message: 'requested object was not found'
     },
     RestClient::BadRequest => {
       class: BadRequest,
-      message: 'invalid request',
+      message: 'invalid request'
     },
     RestClient::Forbidden => {
       class: Forbidden,
-      message: 'not authorized',
+      message: 'not authorized'
     },
     RestClient::InternalServerError => {
       class: InternalServerError,
-      message: 'internal server error',
+      message: 'internal server error'
     },
     RestClient::Unauthorized => {
       class: Unauthorized,
-      message: 'unauthorized request',
+      message: 'unauthorized request'
     }
   }.freeze
   THREAD_EB_API_TOKEN_KEY = :eb_api_token
@@ -103,9 +103,7 @@ module EventbriteSDK
     #
     # BadRequest is raised when you publish an event because the body sent is
     # "null" (invalid json) and the API rejects it.
-    if params[:payload]
-      params[:payload] = params[:payload].to_json
-    end
+    params[:payload] = params[:payload].to_json if params[:payload]
 
     request(params)
   end

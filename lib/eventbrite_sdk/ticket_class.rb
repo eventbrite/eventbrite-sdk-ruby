@@ -26,8 +26,8 @@ module EventbriteSDK
       boolean 'include_fee'
       boolean 'split_fee'
       string 'sales_channels'
-      datetime 'sales_start'
-      datetime 'sales_end'
+      utc 'sales_start'
+      utc 'sales_end'
       string 'sales_start_after'
       integer 'minimum_quantity'
       integer 'maximum_quantity'
@@ -50,7 +50,7 @@ module EventbriteSDK
     end
 
     def unhide!
-      ! hidden || change('hidden' => false)
+      !hidden || change('hidden' => false)
     end
 
     def change(attrs)

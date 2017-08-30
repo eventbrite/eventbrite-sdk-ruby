@@ -34,5 +34,14 @@ module EventbriteSDK
     def to_json(opts = {})
       { @key => [] }.to_json(opts)
     end
+
+    # Blank lists need to respond to the pagination helpers.
+    def object_count
+      0
+    end
+
+    %i(page_count page_number page_size).each do |name|
+      define_method(name) { 1 }
+    end
   end
 end

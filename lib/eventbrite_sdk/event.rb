@@ -21,13 +21,11 @@ module EventbriteSDK
     has_many :ticket_classes, object_class: 'TicketClass'
 
     schema_definition do
-      string 'name.html'
-      string 'description.html'
+      multipart 'name'
+      multipart 'description'
       string 'organizer_id'
-      datetime 'start.utc'
-      datetime 'start.timezone'
-      datetime 'end.utc'
-      datetime 'end.timezone'
+      datetime 'start'
+      datetime 'end'
       boolean 'hide_start_date'
       boolean 'hide_end_date'
       string 'currency'
@@ -45,8 +43,8 @@ module EventbriteSDK
       boolean 'show_remaining'
       string 'source'
       string 'status', read_only: true
-      string 'created', read_only: true
-      string 'changed', read_only: true
+      utc 'created', read_only: true
+      utc 'changed', read_only: true
       string 'resource_uri', read_only: true
     end
 
