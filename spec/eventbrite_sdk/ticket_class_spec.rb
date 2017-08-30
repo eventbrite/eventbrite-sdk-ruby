@@ -26,6 +26,26 @@ module EventbriteSDK
       end
     end
 
+    # Skip for next PR
+    xdescribe '#changes' do
+      context 'when the same cost is set to the POST value' do
+        it 'is not in the changeset' do
+          ticket = described_class.new(
+            cost: {
+              currency: 'USD',
+              value: 432,
+              display: '$4.32'
+            }
+          )
+
+          # This is technically the same value.
+          ticket.assign_attributes cost: 'USD,423'
+
+          expect(ticket.changes.keys).not_to include('cost')
+        end
+      end
+    end
+
     describe '.retrieve' do
       context 'when found' do
         it 'returns the new instance with the populated attributes' do

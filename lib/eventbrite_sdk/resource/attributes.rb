@@ -1,11 +1,6 @@
 module EventbriteSDK
   class Resource
     class Attributes
-      SISTER_FIELDS = {
-        'timezone' => 'utc',
-        'utc' => 'timezone'
-      }.freeze
-
       attr_reader :attrs, :changes
 
       def self.build(attrs, schema)
@@ -20,7 +15,9 @@ module EventbriteSDK
         @schema = schema
 
         # Build out initial hash based on schema's defined keys
-        schema.defined_keys.each { |key| bury_attribute(key, nil) }
+        schema.defined_keys.each do |key|
+          bury_attribute(ValueChange.new(key, nil))
+        end
 
         @attrs = attrs.merge(stringify_keys(hydrated_attrs))
       end
@@ -31,7 +28,8 @@ module EventbriteSDK
 
       def assign_attributes(new_attrs)
         stringify_keys(new_attrs).each do |attribute_key, value|
-          assign_value(attribute_key, value) if schema.writeable?(attribute_key)
+          value = ValueChange.new(attribute_key, value)
+          assign_value(value) if schema.writeable?(attribute_key)
         end
 
         nil
@@ -55,7 +53,7 @@ module EventbriteSDK
 
       def reset!
         changes.each do |attribute_key, (old_value, _current_value)|
-          bury_attribute(attribute_key, old_value)
+          bury_attribute(ValueChange.new(attribute_key, old_value))
         end
 
         @changes = {}
@@ -73,13 +71,7 @@ module EventbriteSDK
       #         on the class name of the resource
       def payload(prefix = nil)
         changes.each_with_object({}) do |(attribute_key, (_, value)), payload|
-          key = if prefix
-                  "#{prefix}.#{attribute_key}"
-                else
-                  attribute_key
-                end
-
-          bury(key, value, payload)
+          bury(ValueChange.new(attribute_key, value, prefix: prefix), payload)
         end
       end
 
@@ -91,44 +83,27 @@ module EventbriteSDK
 
       attr_reader :schema
 
-      def assign_value(attribute_key, value)
-        dirty_check(attribute_key, value)
-        add_rich_value(attribute_key)
-        bury_attribute(attribute_key, value)
+      def assign_value(value)
+        apply_changeset(value)
+        bury_attribute(value)
       end
 
-      def dirty_check(attribute_key, value)
-        initial_value = attrs.dig(*attribute_key.split('.'))
-
-        if initial_value != value
-          changes[attribute_key] = [initial_value, value]
-        end
+      def apply_changeset(value)
+        changes.merge! value.diff(attrs, changes)
       end
 
-      def bury_attribute(attribute_key, value)
-        bury(attribute_key, value, attrs)
+      def bury_attribute(value)
+        bury(value, attrs)
       end
 
-      # Since we use dirty checking to determine what the payload is
-      # you can run into a case where a "rich media" field needs other attrs
-      # Namely timezone, so if a rich date changed, add the tz with it.
-      def add_rich_value(attribute_key)
-        if changes[attribute_key] && attribute_key =~ /\A(.+)\.(utc|timezone)\z/
-          field = Regexp.last_match(2)
-          key_prefix = Regexp.last_match(1)
-
-          handle_sister_field(key_prefix, field)
-        end
-      end
-
-      def bury(attribute_key, value, hash = {})
-        keys = attribute_key.split '.'
+      def bury(value, hash = {})
+        keys = value.key.split '.'
 
         # Hand rolling #bury
         # hopefully we get it in the next release of Ruby
         keys.each_cons(2).reduce(hash) do |prev_attrs, (key, _)|
           prev_attrs[key] ||= {}
-        end[keys.last] = value
+        end[keys.last] = value.value
 
         hash
       end
@@ -145,15 +120,6 @@ module EventbriteSDK
 
       def respond_to_missing?(method_name, _include_private = false)
         attrs.has_key?(method_name.to_s) || super
-      end
-
-      def handle_sister_field(key_prefix, field)
-        sister_field = SISTER_FIELDS[field]
-        stale_value = attrs.dig(key_prefix, sister_field)
-
-        unless changes["#{key_prefix}.#{sister_field}"]
-          changes["#{key_prefix}.#{sister_field}"] = [stale_value, stale_value]
-        end
       end
 
       def handle_requested_attr(value)
