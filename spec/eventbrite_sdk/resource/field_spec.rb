@@ -23,44 +23,22 @@ module EventbriteSDK
 
       describe '#changes' do
         context 'when key given has a sibling' do
-          context 'and the sibling exists in given attrs' do
-            it 'does not add the sibling to returned changes' do
-              attrs = {
-                'exist' => {
-                  'timezone' => 'old value'
-                }
+          it 'adds the sibling to returned changes' do
+            attrs = {
+              'exist' => {
+                'utc' => 'old value',
+                'timezone' => 'dupe me'
               }
-              existing_changes = {
-                'exist.utc' => ['old', 'new']
-              }
-              changeset = described_class.new('exist.timezone', 'new value')
+            }
+            existing_changes = {}
+            changeset = described_class.new('exist.utc', 'new value')
 
-              changes = changeset.changes(attrs, existing_changes)
+            changes = changeset.changes(attrs, existing_changes)
 
-              expect(changes).to eq(
-                'exist.timezone' => ['old value', 'new value']
-              )
-            end
-          end
-
-          context 'and the sibling does not exist in given attrs' do
-            it 'adds the sibling to returned changes' do
-              attrs = {
-                'exist' => {
-                  'utc' => 'old value',
-                  'timezone' => 'dupe me'
-                }
-              }
-              existing_changes = {}
-              changeset = described_class.new('exist.utc', 'new value')
-
-              changes = changeset.changes(attrs, existing_changes)
-
-              expect(changes).to eq(
-                'exist.timezone' => ['dupe me', 'dupe me'],
-                'exist.utc' => ['old value', 'new value']
-              )
-            end
+            expect(changes).to eq(
+              'exist.timezone' => ['dupe me', 'dupe me'],
+              'exist.utc' => ['old value', 'new value']
+            )
           end
         end
 
