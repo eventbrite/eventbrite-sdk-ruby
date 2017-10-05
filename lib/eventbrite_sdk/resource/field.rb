@@ -14,8 +14,8 @@ module EventbriteSDK
       end
 
       def changes(attrs, changes)
-        %i[basic_changes rich_changes].reduce({}) do |diff, method|
-          diff.merge send(method, attrs, changes)
+        %i[basic_changes rich_changes].reduce(changes) do |diff, method|
+          send(method, attrs, diff)
         end
       end
 
@@ -50,19 +50,21 @@ module EventbriteSDK
 
       attr_reader :datetime, :schema
 
-      def basic_changes(attrs, _changes)
+      def basic_changes(attrs, changes)
         @initial_value = attrs.dig(*keys)
         comp_value = schema.dirty_comparable(self)
 
-        (comp_value != value && { key => [initial_value, value] }) || {}
+        changes.merge(
+          (comp_value != value && { key => [initial_value, value] }) || {}
+        )
       end
 
       def rich_changes(attrs, changes)
-        if key =~ SIBLING_REGEX && !changes[sister_field]
+        if key =~ SIBLING_REGEX && changes[key] && !changes[sister_field]
           @datetime = true
-          { sister_field => sister_change(attrs) }
+          changes.merge(sister_field => sister_change(attrs))
         else
-          {}
+          changes
         end
       end
 

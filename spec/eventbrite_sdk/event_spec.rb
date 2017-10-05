@@ -118,7 +118,7 @@ module EventbriteSDK
         )
       end
 
-      it "does not auto override if you are actually changing tz" do
+      it 'does not auto override if you are actually changing tz' do
         event = described_class.new(
           'start' => {
             'utc' => '2012-01-01', 'timezone' => 'America/Los_Angeles'
@@ -134,6 +134,53 @@ module EventbriteSDK
           'start.utc' => ['2012-01-01', '9999-99-99'],
           'start.timezone' => ['America/Los_Angeles', 'America/Chicago']
         )
+      end
+
+      it 'does not change when given an existing utc value' do
+        same_date = '2012-01-01'
+        event = described_class.new(
+          'start' => {
+            'utc' => same_date,
+            'timezone' => 'America/Los_Angeles'
+          }
+        )
+
+        event.assign_attributes('start.utc' => same_date)
+
+        expect(event).not_to be_changed
+      end
+
+      it 'does not change when given existing timezone value' do
+        same_tz = 'America/Los_Angeles'
+        event = described_class.new(
+          'start' => {
+            'utc' => '2012-01-01',
+            'timezone' => same_tz
+          }
+        )
+
+        event.assign_attributes('start.timezone' => same_tz)
+
+        expect(event).not_to be_changed
+      end
+
+      it 'does not change when gevn existing tz/utc values' do
+        same_tz = 'America/Los_Angeles'
+        same_utc = '2012-01-01'
+
+        event = described_class.new(
+          'start' => {
+            'timezone' => same_tz,
+            'utc' => same_utc
+          }
+        )
+
+        event.assign_attributes(
+          'start.timezone' => same_tz,
+          'start.utc' => same_utc
+        )
+
+        expect(event).not_to be_changed
       end
     end
 
