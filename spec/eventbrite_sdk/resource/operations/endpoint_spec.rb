@@ -9,9 +9,11 @@ module EventbriteSDK
             payload = 'payload'
             request = double('Request', get: payload)
 
-            result = TestEndpoint.retrieve({ 'id' => 1 }, request)
+            result = TestEndpoint.retrieve({ id:  1, api_token: 'a' }, request)
 
-            expect(request).to have_received(:get).with(url: 'test/1', query: nil)
+            expect(request).
+              to have_received(:get).
+              with(url: 'test/1', query: nil, api_token: 'a')
             expect(result.payload).to eq(payload)
           end
 
@@ -25,7 +27,11 @@ module EventbriteSDK
 
                 expect(request).
                   to have_received(:get).
-                  with(url: 'test/1', query: { expand: 'events' })
+                  with(
+                    url: 'test/1',
+                    query: { expand: 'events' },
+                    api_token: nil
+                )
                 expect(result.payload).to eq(payload)
               end
             end
@@ -41,7 +47,11 @@ module EventbriteSDK
 
                 expect(request).
                   to have_received(:get).
-                  with(url: 'test/1', query: { expand: 'events,users' })
+                  with(
+                    url: 'test/1',
+                    query: { expand: 'events,users' },
+                    api_token: nil
+                )
                 expect(result.payload).to eq(payload)
               end
             end
@@ -57,7 +67,11 @@ module EventbriteSDK
 
                 expect(request).
                   to have_received(:get).
-                  with(url: 'test/1', query: { expand: 'events,users' })
+                  with(
+                    url: 'test/1',
+                    query: { expand: 'events,users' },
+                    api_token: nil
+                )
                 expect(result.payload).to eq(payload)
               end
             end

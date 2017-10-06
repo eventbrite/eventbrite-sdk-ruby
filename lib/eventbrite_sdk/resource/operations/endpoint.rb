@@ -34,11 +34,10 @@ module EventbriteSDK
               path.gsub(":#{key}", value.to_s)
             end
 
-            if params[:expand]
-              query = { expand: [*params[:expand]].join(',') }
-            end
+            api_token = params.fetch(:api_token, nil)
+            query = params[:expand] && { expand: [*params[:expand]].join(',') }
 
-            new request.get(url: url_path, query: query)
+            new request.get(url: url_path, query: query, api_token: api_token)
           end
 
           # Define the url path for the resource. It also implicitly defines
