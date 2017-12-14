@@ -197,6 +197,18 @@ module EventbriteSDK
             url: 'events/1/cancel'
           )
         end
+
+        it 'when given :api_token it passes it through' do
+          event = described_class.new('id' => '1')
+          allow(EventbriteSDK).to receive(:post).and_return('bahleted')
+
+          result = event.cancel(api_token: 'api_token')
+
+          expect(result).to eq('bahleted')
+          expect(EventbriteSDK).to have_received(:post).with(
+            url: 'events/1/cancel', api_token: 'api_token'
+          )
+        end
       end
 
       context 'when id is absent' do
