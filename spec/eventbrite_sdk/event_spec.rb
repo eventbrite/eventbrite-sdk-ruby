@@ -406,5 +406,68 @@ module EventbriteSDK
         end
       end
     end
+
+    describe '#over?' do
+      context 'when status is canceled' do
+         it 'returns true' do
+           status = described_class::STATUS_CANCELED
+           subject = described_class.new(status: status)
+
+           expect(subject).to be_over
+         end
+       end
+
+       context 'when status is completed' do
+         it 'returns true' do
+           status = described_class::STATUS_COMPLETED
+           subject = described_class.new(status: status)
+
+           expect(subject).to be_over
+         end
+       end
+
+       context 'when status is deleted' do
+         it 'returns true' do
+           status = described_class::STATUS_DELETED
+           subject = described_class.new(status: status)
+
+           expect(subject).to be_over
+         end
+       end
+
+       context 'when status is ended' do
+         it 'returns true' do
+           status = described_class::STATUS_ENDED
+           subject = described_class.new(status: status)
+
+           p subject.status
+           expect(subject).to be_over
+         end
+       end
+
+       context 'when status is live' do
+         it 'returns false' do
+           status = described_class::STATUS_LIVE
+           subject = described_class.new(status: status)
+
+           expect(subject).not_to be_over
+         end
+       end
+
+       context 'when status is started' do
+         it 'returns false' do
+           status = described_class::STATUS_STARTED
+           subject = described_class.new(status: status)
+
+          expect(subject).not_to be_over
+        end
+      end
+
+      context 'when status is nil' do
+        it 'returns false' do
+          expect(subject).not_to be_over
+        end
+      end
+    end
   end
 end

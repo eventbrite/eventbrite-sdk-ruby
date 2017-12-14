@@ -2,6 +2,14 @@ module EventbriteSDK
   class Event < Resource
     ERROR_CANNOT_UNPUBLISH = 'CANNOT_UNPUBLISH'.freeze
     ERROR_ALREADY_PUBLISHED_OR_DELETED = 'ALREADY_PUBLISHED_OR_DELETED'.freeze
+    ERROR_ALREADY_CANCELED = 'ALREADY_CANCELED'.freeze
+
+    STATUS_CANCELED = 'canceled'.freeze
+    STATUS_COMPLETED = 'completed'.freeze
+    STATUS_DELETED = 'deleted'.freeze
+    STATUS_ENDED = 'ended'.freeze
+    STATUS_LIVE = 'live'.freeze
+    STATUS_STARTED = 'started'.freeze
 
     # Defines event#cancel, event#publish, and event#unpublish
     #
@@ -62,6 +70,15 @@ module EventbriteSDK
         assign_attributes('listed' => true)
         save
       end
+    end
+
+    def over?
+      [
+        self.class::STATUS_CANCELED,
+        self.class::STATUS_COMPLETED,
+        self.class::STATUS_DELETED,
+        self.class::STATUS_ENDED
+      ].include?(status)
     end
 
     def unlist!
