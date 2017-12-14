@@ -27,8 +27,8 @@ module EventbriteSDK
     #   !new? && EventbriteSDK.post(url: path('unpublish'))
     # end
     def self.define_api_actions(*actions)
-      req = lambda do |inst, postfix|
-        inst.instance_eval { !new? && EventbriteSDK.post(url: path(postfix)) }
+      req = lambda do |inst, postfix, opts|
+        inst.instance_eval { !new? && EventbriteSDK.post(opts.merge(url: path(postfix))) }
       end
 
       actions.each do |action|
@@ -38,7 +38,7 @@ module EventbriteSDK
           method_name = postfix_path = action
         end
 
-        define_method(method_name) { req.call(self, postfix_path) }
+        define_method(method_name) { |opts = {}| req.call(self, postfix_path, opts) }
       end
     end
 
