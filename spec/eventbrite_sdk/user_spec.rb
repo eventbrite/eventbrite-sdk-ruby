@@ -33,6 +33,23 @@ module EventbriteSDK
         end
       end
     end
+
+    describe '#ticket_groups' do
+      it 'returns a new Resource list with a proper url_base' do
+        allow(ResourceList).to receive(:new)
+
+        described_class.new(id: '1').ticket_groups
+
+        expect(ResourceList).
+          to have_received(:new).
+          with(
+            url_base: 'users/1/ticket_groups',
+             object_class: TicketGroup,
+             key: :ticket_groups
+           )
+      end
+    end
+
     describe '#unverify' do
       context 'when id exists' do
         it 'calls save with `unverify`' do

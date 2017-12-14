@@ -260,8 +260,10 @@ module EventbriteSDK
         it 'hydrates a list of Orders' do
           stub_get(
             path: 'events/31337',
-            fixture: :event_read,
-            override: { 'id' => '31337' },
+            fixture: {
+              name: :event_read,
+              override: { 'id' => '31337' }
+            }
           )
           stub_get(path: 'events/31337/orders/?page=1', fixture: :event_orders)
 
@@ -287,8 +289,10 @@ module EventbriteSDK
         it 'hydrates a list of Attendees' do
           stub_get(
             path: 'events/31337',
-            fixture: :event_read,
-            override: { 'id' => '31337' },
+            fixture: {
+              name: :event_read,
+              override: { 'id' => '31337' }
+            }
           )
           stub_get(path: 'events/31337/attendees/?page=1', fixture: :attendees_read)
 
@@ -314,8 +318,10 @@ module EventbriteSDK
         it 'hydrates a list of TicketClasses' do
           stub_get(
             path: 'events/31337',
-            fixture: :event_read,
-            override: { 'id' => '31337' },
+            fixture: {
+              name: :event_read,
+              override: { 'id' => '31337' }
+            }
           )
           stub_get(
             path: 'events/31337/ticket_classes/?page=1',
@@ -467,6 +473,22 @@ module EventbriteSDK
         it 'returns false' do
           expect(subject).not_to be_over
         end
+      end
+    end
+
+    describe '#ticket_groups' do
+      it 'returns a new Resource list with a proper url_base' do
+        allow(ResourceList).to receive(:new)
+
+        described_class.new(id: '1').ticket_groups
+
+        expect(ResourceList).
+          to have_received(:new).
+          with(
+            url_base: 'events/1/ticket_groups',
+             object_class: TicketGroup,
+             key: :ticket_groups
+           )
       end
     end
   end

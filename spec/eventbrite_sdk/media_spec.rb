@@ -42,10 +42,7 @@ module EventbriteSDK
           )
 
           stub_request(:post, 'https://s3.amazonaws.com/uploader/')
-
-          stub_post_with_response(
-            path: 'media/upload', fixture: :media_upload_notify
-          )
+          stub_post(path: 'media/upload', fixture: :media_upload_notify)
 
           file = File.join(
             File.dirname(__FILE__), '../fixtures', 'eb-logo.jpg'
@@ -67,14 +64,8 @@ module EventbriteSDK
             )
 
             stub_request(:post, 'https://s3.amazonaws.com/uploader/')
-
-            stub_post_with_response(
-              path: 'media/upload', fixture: :media_upload_notify
-            )
-
-            stub_post_with_response(
-              path: 'media/675348978', fixture: :media_crop_mask
-            )
+            stub_post(path: 'media/upload', fixture: :media_upload_notify)
+            stub_post(path: 'media/675348978', fixture: :media_crop_mask)
 
             file = File.join(
               File.dirname(__FILE__), '../fixtures', 'eb-logo.jpg'
