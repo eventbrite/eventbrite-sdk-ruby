@@ -27,6 +27,7 @@ module EventbriteSDK
     has_many :orders, object_class: 'Order'
     has_many :attendees, object_class: 'Attendee'
     has_many :ticket_classes, object_class: 'TicketClass'
+    has_many :ticket_groups, object_class: 'TicketGroup'
 
     schema_definition do
       multipart 'name'

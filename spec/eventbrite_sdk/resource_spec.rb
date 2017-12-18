@@ -60,8 +60,7 @@ module EventbriteSDK
         # Stub the get request
         stub_get(
           path: 'events/dummy1',
-          fixture: :event_read,
-          override: updated_event_attrs
+          fixture: { name: :event_read, override: updated_event_attrs }
         )
 
         dummy.dumdum   # force the relative to be instantiated
@@ -117,10 +116,9 @@ module EventbriteSDK
         dummy = DummyResource.new(event_attrs)
 
         # Stub the save request
-        stub_post_with_response(
+        stub_post(
           path: 'events/dummy1',
-          fixture: :event_created,
-          override: updated_event_attrs
+          fixture: { name: :event_created, override: updated_event_attrs }
         )
 
         allow(Dumdum).to receive(:new).and_call_original
@@ -144,13 +142,15 @@ module EventbriteSDK
               Resource::NullSchemaDefinition.new
             )
 
-            stub_post_with_response(
+            stub_post(
               path: 'events',
-              fixture: :event_created,
-              override: {
-                'id' => 'new',
-                'name' => {
-                  'html' => name,
+              fixture: {
+                name: :event_created,
+                override: {
+                  'id' => 'new',
+                  'name' => {
+                    'html' => name,
+                  }
                 }
               }
             )
@@ -179,16 +179,17 @@ module EventbriteSDK
           name = "Test event #{SecureRandom.hex(4)}"
           stub_get(
             path: 'events/111',
-            fixture: :event_read,
-            override: { 'id' => '111' }
+            fixture: { name: :event_read, override: { 'id' => '111' } }
           )
-          stub_post_with_response(
+          stub_post(
             path: 'events/111',
-            fixture: :event_created,
-            override: {
-              'name' => {
-                'html' => name,
-                'text' => name
+            fixture: {
+              name: :event_created,
+              override: {
+                'name' => {
+                  'html' => name,
+                  'text' => name
+                }
               }
             }
           )

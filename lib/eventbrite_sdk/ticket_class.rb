@@ -12,6 +12,7 @@ module EventbriteSDK
     resource_path 'events/:event_id/ticket_classes/:id'
 
     belongs_to :event, object_class: 'Event'
+    has_many :ticket_groups, object_class: 'TicketGroup'
 
     attributes_prefix 'ticket_class'
 

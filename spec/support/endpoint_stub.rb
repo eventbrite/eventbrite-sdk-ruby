@@ -8,14 +8,36 @@ module EndpointStub
       to_return(body: payload, status: status)
   end
 
-  def stub_get(path: '', fixture: nil, override: {})
-    payload = JSON.parse(file(fixture)).merge!(override)
+  # Mock a GET request endpoint with a specific body, or load a fixture.
+  #
+  #   path:   String path (no leading or trailing slashes).
+  #
+  #   body:   (optional) An object representing what to return.
+  #
+  #   fixture (optional) - Can be the name of a fixture to load, or a hash
+  #           representing the fixture to load with override values.
+  #     name:     The name of the fixture file to load.
+  #     override: A hash with keys/values to use instead of the default
+  #             fixture values.
+  def stub_get(path:, body: {}, fixture: nil)
+    payload = build_payload_from_fixture(fixture) || body
 
     stub_endpoint(path: path, method: :get, body: payload)
   end
 
-  def stub_post_with_response(path: '', fixture: nil, override: {})
-    payload = JSON.parse(file(fixture)).merge!(override)
+  # Mock a post request endpoint with a specific body, or load a fixture.
+  #
+  #   path:   String path (no leading or trailing slashes).
+  #
+  #   body:   (optional) An object representing what to return.
+  #
+  #   fixture (optional) - Can be the name of a fixture to load, or a hash
+  #           representing the fixture to load with override values.
+  #     name:     The name of the fixture file to load.
+  #     override: A hash with keys/values to use instead of the default
+  #             fixture values.
+  def stub_post(path:, body: {}, fixture: nil)
+    payload = build_payload_from_fixture(fixture) || body
 
     stub_endpoint(path: path, method: :post, body: payload)
   end
@@ -29,5 +51,16 @@ module EndpointStub
   def file(filename)
     path = File.join(File.dirname(__FILE__), '../fixtures', "#{filename}.json")
     File.read(path)
+  end
+
+  def build_payload_from_fixture(values = nil)
+    if values
+      filename, override = if values.respond_to?(:keys)
+                             [values[:name], values[:override]]
+                           else
+                             [values, {}]
+                           end
+      JSON.parse(file(filename)).merge!(override)
+    end
   end
 end
