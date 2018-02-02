@@ -4,6 +4,19 @@ module EventbriteSDK
   RSpec.describe Webhook do
     before { EventbriteSDK.token = 'token' }
 
+    describe '.list' do
+      it 'returns a new ResouceList' do
+        stub_endpoint(
+          path: 'webhooks/?page=1',
+          body: :webhooks,
+        )
+
+        list = described_class.list.retrieve
+
+        expect(list).to be_an_instance_of(ResourceList)
+      end
+    end
+
     describe '.retrieve' do
       context 'when found' do
         it 'returns a new instance' do

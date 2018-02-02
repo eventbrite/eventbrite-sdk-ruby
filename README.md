@@ -149,6 +149,18 @@ order.delete(api_token: YOUR_REQUEST_TOKEN)
 If you forget to provide the api_token key and `EventbriteSDK.token` is set, the request
 will fall-back on the global token for the action called.
 
+# Shallow resource list endpoints
+
+Some paginated lists are available at the base of the resource url, webhooks and 
+categories for example. The resources that have this trait will include the `Operations::List` module
+
+``` ruby
+
+# Retrieving
+
+categories = EventbriteSDK::Category.list.page(1) #=> GET /v3/categories/?page=1
+webhooks = EventbriteSDK::Webhook.list.page(1) #=> GET /v3/webhooks/?page=1
+```
 
 ## Development
 
