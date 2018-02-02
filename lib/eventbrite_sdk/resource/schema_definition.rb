@@ -1,4 +1,3 @@
-require 'byebug'
 module EventbriteSDK
   class Resource
     class SchemaDefinition
