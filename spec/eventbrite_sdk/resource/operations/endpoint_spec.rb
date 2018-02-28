@@ -76,6 +76,20 @@ module EventbriteSDK
               end
             end
           end
+
+          context 'when resource_path was given :create/:update paths' do
+            it 'returns given :update path' do
+              request = double('Request', get: '')
+
+              TestMultiEndpoint.retrieve({ id: 'id' }, request)
+
+              expect(request).to have_received(:get).with(
+                url: 'multi/id',
+                query: nil,
+                api_token: nil
+              )
+            end
+          end
         end
 
         describe '.resource_path' do
@@ -132,6 +146,28 @@ module EventbriteSDK
               expect(endpoint.path).to eq('test/id')
             end
           end
+
+          context 'when given :create/:update path config' do
+            context 'and resource#new? is true' do
+              it 'returns given :create path' do
+                endpoint = TestMultiEndpoint.new('nothing')
+
+                allow(endpoint).to receive(:new?).and_return(true)
+
+                expect(endpoint.path).to eq('endpoint/eid/multi')
+              end
+            end
+
+            context 'and rsource#new? is false' do
+              it 'returns given :update path' do
+                endpoint = TestMultiEndpoint.new('nothing')
+
+                allow(endpoint).to receive(:new?).and_return(false)
+
+                expect(endpoint.path).to eq('multi/id')
+              end
+            end
+          end
         end
 
         describe '#full_url' do
@@ -161,6 +197,10 @@ module EventbriteSDK
           def id
             'id'
           end
+
+          def new?
+            false
+          end
         end
 
         class TestNestedEndpoint
@@ -180,6 +220,33 @@ module EventbriteSDK
 
           def nested
             'nested'
+          end
+
+          def new?
+            false
+          end
+        end
+
+        class TestMultiEndpoint
+          include Endpoint
+
+          resource_path create: 'endpoint/:endpoint_id/multi',
+                        update: 'multi/:id'
+
+          def initialize(payload)
+            @payload = payload
+          end
+
+          def id
+            'id'
+          end
+
+          def new?
+            false
+          end
+
+          def endpoint_id
+            'eid'
           end
         end
       end

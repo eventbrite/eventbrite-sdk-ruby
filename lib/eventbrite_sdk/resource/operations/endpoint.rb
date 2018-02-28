@@ -3,8 +3,6 @@ module EventbriteSDK
     module Operations
       module Endpoint
         module ClassMethods
-          attr_reader :path, :path_opts
-
           # Retrieve a resource.
           #
           # params: Hash of supported parameters. The keys and values are
@@ -30,8 +28,8 @@ module EventbriteSDK
           # This tells the resource to replace the :id placeholder with the
           # value 1234. It also will pass the :expand option with the
           def retrieve(params, request = EventbriteSDK)
-            url_path = params.reduce(@path) do |path, (key, value)|
-              path.gsub(":#{key}", value.to_s)
+            url_path = params.reduce(path) do |path_config, (key, value)|
+              path_config.gsub(":#{key}", value.to_s)
             end
 
             api_token = params.fetch(:api_token, nil)
@@ -55,21 +53,37 @@ module EventbriteSDK
           # requires those parameters to build the correct resource url path.
           # See the retrieve method (above) for additional details.
           def resource_path(path)
-            @path = path
+            if path.is_a?(Hash)
+              @paths = path
+            else
+              @paths = { create: path, update: path }
+            end
 
-            path.scan(/:\w+/).each do |path_attr|
-              attr = path_attr.delete(':').to_sym
+            define_path_methods
+          end
 
-              define_method(attr) do
-                @attrs[attr] if @attrs.respond_to?(attr)
+          def define_path_methods
+            @paths.values.each do |path_config|
+              path_config.scan(/:\w+/).each do |path_attr|
+                attr = path_attr.delete(':').to_sym
+
+                define_method(attr) { @attrs[attr] if @attrs.respond_to?(attr) }
               end
+            end
+          end
+
+          def path(is_create = false)
+            if is_create
+              @paths[:create]
+            else
+              @paths[:update]
             end
           end
         end
 
         module InstanceMethods
           def path(postfixed_path = '')
-            resource_path = self.class.path.dup
+            resource_path = self.class.path(new?).dup
             tokens = resource_path.scan(/:\w+/)
 
             full_path = tokens.reduce(resource_path) do |path_frag, token|
