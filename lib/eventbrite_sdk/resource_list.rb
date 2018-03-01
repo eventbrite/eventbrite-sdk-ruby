@@ -49,7 +49,14 @@ module EventbriteSDK
       page(pagination['page_number'] - 1, api_token: api_token)
     end
 
-    %w[object_count page_number page_size page_count].each do |method|
+    %w[
+      continuation
+      has_more_items
+      object_count
+      page_number
+      page_size
+      page_count
+    ].each do |method|
       define_method(method) { pagination[method] }
     end
 

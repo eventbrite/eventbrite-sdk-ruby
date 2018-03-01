@@ -237,6 +237,8 @@ module EventbriteSDK
       it 'returns the value provided in the requests `pagination` payload' do
         pagination = {
           'pagination' => {
+            'continuation' => 'abc',
+            'has_more_items' => true,
             'object_count' => 13,
             'page_number' => 2,
             'page_size' => 50,
@@ -255,6 +257,8 @@ module EventbriteSDK
 
         list.retrieve
 
+        expect(list.continuation).to eq('abc')
+        expect(list.has_more_items).to eq(true)
         expect(list.object_count).to eq(13)
         expect(list.page_number).to eq(2)
         expect(list.page_size).to eq(50)
