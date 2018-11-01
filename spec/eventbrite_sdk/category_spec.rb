@@ -5,7 +5,7 @@ module EventbriteSDK
     describe '.list' do
       it 'returns a new ResouceList' do
         stub_endpoint(
-          path: 'categories/?page=1',
+          path: 'categories',
           body: :categories,
         )
 

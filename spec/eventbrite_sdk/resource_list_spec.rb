@@ -40,7 +40,7 @@ module EventbriteSDK
 
           expect(request).to have_received(:get).with(
             url: nil,
-            query: { event_id: 1, page: 1 },
+            query: { event_id: 1 },
             api_token: api_token
           )
         end
@@ -56,7 +56,7 @@ module EventbriteSDK
 
           expect(request).to have_received(:get).with(
             url: nil,
-            query: { page: 1, expand: 'organizer,event,event.venue' },
+            query: { expand: 'organizer,event,event.venue' },
             api_token: nil
           )
         end
@@ -105,7 +105,7 @@ module EventbriteSDK
           list.retrieve
 
           expect(request).to have_received(:get).with(
-            url: 'url', query: { page: 1 }, api_token: nil
+            url: 'url', query: {}, api_token: nil
           )
           expect(list.first).to be_an_instance_of(Event)
 
@@ -137,7 +137,7 @@ module EventbriteSDK
           list.retrieve
 
           expect(request).to have_received(:get).with(
-            url: 'url', query: { page: 1 }, api_token: nil
+            url: 'url', query: {}, api_token: nil
           )
           expect(list).to be_empty
         end
@@ -157,9 +157,8 @@ module EventbriteSDK
           expect(request).to have_received(:get).with(
             url: 'testbase',
             query: {
+              sun: 'glasses',
               test: 'foo',
-              page: 1,
-              sun: 'glasses'
             },
             api_token: nil
           )
@@ -211,7 +210,6 @@ module EventbriteSDK
               url: 'testbase',
               query: {
                 test: 'foo',
-                page: 1,
                 sun: 'glasses'
               },
               api_token: nil
@@ -230,6 +228,87 @@ module EventbriteSDK
             )
           end
         end
+      end
+    end
+
+    context 'continuation' do
+      it 'retrieves using the retrieved continuation token' do
+        payload = {
+          'events' => [
+          ],
+          'pagination' => {
+            'continuation' => 'abc',
+            'has_more_items' => true,
+          }
+        }
+
+        request = double('Request', get: payload)
+
+        list = described_class.new(
+          url_base: 'url',
+          object_class: Event,
+          key: :events,
+          request: request,
+        )
+
+        list.retrieve
+
+        list.continue
+
+        expect(request).to have_received(:get).with(
+          url: 'url', query: { continuation: 'abc' }, api_token: nil
+        )
+      end
+
+      it 'retrieves using given optional continuation_token' do
+        payload = {
+          'events' => [
+          ],
+          'pagination' => {
+            'continuation' => 'abc',
+            'has_more_items' => true,
+          }
+        }
+
+        request = double('Request', get: payload)
+
+        list = described_class.new(
+          url_base: 'url',
+          object_class: Event,
+          key: :events,
+          request: request,
+        )
+
+        list.retrieve
+
+        list.continue(continuation_token: 'not_abc')
+
+        expect(request).to have_received(:get).with(
+          url: 'url', query: { continuation: 'not_abc' }, api_token: nil
+        )
+      end
+
+      it 'returns nil when hydrated result has_more_items=false and continuation not present' do
+        payload = {
+          'events' => [
+          ],
+          'pagination' => {
+            'has_more_items' => false,
+          }
+        }
+
+        request = double('Request', get: payload)
+
+        list = described_class.new(
+          url_base: 'url',
+          object_class: Event,
+          key: :events,
+          request: request,
+        )
+
+        list.retrieve
+
+        expect(list.continue).to be_nil
       end
     end
 
@@ -316,9 +395,9 @@ module EventbriteSDK
         list.next_page
 
         expect(request).to have_received(:get).with(
+          api_token: nil,
+          query: {},
           url: 'url',
-          query: { page: page_number },
-          api_token: nil
         )
         expect(request).to have_received(:get).with(
           url: 'url',

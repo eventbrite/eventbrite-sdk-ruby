@@ -15,9 +15,9 @@ module EventbriteSDK
             list.search('term').retrieve
 
             expect(request).to have_received(:get).with(
+              api_token: nil,
+              query: { search_term: 'term' },
               url: 'users/me/search_owned_event_orders',
-              query: { search_term: 'term', page: 1 },
-              api_token: nil
             )
           end
         end
@@ -33,9 +33,9 @@ module EventbriteSDK
             list.search(false).retrieve
 
             expect(request).to have_received(:get).with(
+              api_token: nil,
+              query: {},
               url: 'users/me/owned_event_orders',
-              query: { page: 1 },
-              api_token: nil
             )
           end
         end
