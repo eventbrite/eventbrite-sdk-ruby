@@ -19,7 +19,7 @@ module EventbriteSDK
       context 'when found' do
         it 'returns a list of events' do
           stub_endpoint(
-            path: 'events/search/?user.id=123&page=1',
+            path: 'events/search/?user.id=123',
             body: :events,
           )
           events = described_class.search('user.id' => 123).retrieve
@@ -265,7 +265,7 @@ module EventbriteSDK
               override: { 'id' => '31337' }
             }
           )
-          stub_get(path: 'events/31337/orders/?page=1', fixture: :event_orders)
+          stub_get(path: 'events/31337/orders', fixture: :event_orders)
 
           event = described_class.retrieve(id: '31337')
 
@@ -294,7 +294,7 @@ module EventbriteSDK
               override: { 'id' => '31337' }
             }
           )
-          stub_get(path: 'events/31337/attendees/?page=1', fixture: :attendees_read)
+          stub_get(path: 'events/31337/attendees', fixture: :attendees_read)
 
           event = described_class.retrieve(id: '31337')
 
@@ -324,7 +324,7 @@ module EventbriteSDK
             }
           )
           stub_get(
-            path: 'events/31337/ticket_classes/?page=1',
+            path: 'events/31337/ticket_classes',
             fixture: :event_ticket_classes
           )
 

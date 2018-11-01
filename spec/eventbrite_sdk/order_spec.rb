@@ -106,7 +106,7 @@ module EventbriteSDK
             body: :order_read,
           )
           stub_endpoint(
-            path: 'orders/12345/attendees/?page=1',
+            path: 'orders/12345/attendees',
             body: :attendees_read,
           )
 

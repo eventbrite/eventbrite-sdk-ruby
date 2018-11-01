@@ -91,6 +91,16 @@ events = user.owned_events.page(1) => events = user.owned_events
 events.first => events[0]
 events.last => events[-1]
 
+# endpoints that support continuations: will be inferred from the current payload
+# you can tell if a paginated result set supports continuations by checking for a non-nil #continuation
+
+example.continuation #=> "dGhpcyBpcyBwYWdlIDE"
+
+# you can continue until the example returns nil, which means there are no more items
+example.continue
+
+# you can also provide a token if you choose to do so
+example.continue(continuation_token: 'my_token')
 ```
 # Construct endpoint paths:
 

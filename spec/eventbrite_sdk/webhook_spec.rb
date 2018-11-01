@@ -7,7 +7,7 @@ module EventbriteSDK
     describe '.list' do
       it 'returns a new ResouceList' do
         stub_endpoint(
-          path: 'webhooks/?page=1',
+          path: 'webhooks',
           body: :webhooks,
         )
 
