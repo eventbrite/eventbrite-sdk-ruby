@@ -69,6 +69,7 @@ your_event.save
 your_event.publish
 
 ```
+
 # Navigating paginated responses:
 
 ``` ruby
@@ -102,6 +103,18 @@ example.continue
 # you can also provide a token if you choose to do so
 example.continue(continuation_token: 'my_token')
 ```
+
+# Use `#retrieve` to build up arbitrary queries
+
+``` ruby
+
+# For example, to use the 'status' parameter seen here: https://www.eventbrite.com/developer/v3/endpoints/events/#ebapi-id78
+
+user = EventbriteSDK::User.retrieve(id: 163054428874)
+user.owned_events.retrieve(query: { status: 'live' })
+
+```
+
 # Construct endpoint paths:
 
 ``` ruby
