@@ -30,11 +30,11 @@ RSpec::Matchers.define :have_received_request do |method|
     @webmock_matcher.matches?(WebMock)
   end
 
-  failure_message_for_should do |actual|
+  failure_message do |actual|
     @webmock_matcher.failure_message
   end
 
-  failure_message_for_should_not do |actual|
+  failure_message_when_negated do |actual|
     @webmock_matcher.failure_message_when_negated
   end
 
