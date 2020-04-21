@@ -22,9 +22,12 @@ require 'eventbrite_sdk/lists/owned_event_orders_list'
 
 require 'eventbrite_sdk/attendee'
 require 'eventbrite_sdk/category'
+require 'eventbrite_sdk/discount'
+require 'eventbrite_sdk/discounts_list'
 require 'eventbrite_sdk/event'
 require 'eventbrite_sdk/media'
 require 'eventbrite_sdk/order'
+require 'eventbrite_sdk/organization'
 require 'eventbrite_sdk/organizer'
 require 'eventbrite_sdk/report'
 require 'eventbrite_sdk/subcategory'
@@ -33,6 +36,7 @@ require 'eventbrite_sdk/ticket_group'
 require 'eventbrite_sdk/user'
 require 'eventbrite_sdk/venue'
 require 'eventbrite_sdk/webhook'
+require 'eventbrite_sdk/organization_entities' # depends on Discount, Event, Venue
 
 module EventbriteSDK
   BASE = "https://www.eventbriteapi.com/v#{VERSION.split('.').first}".freeze
