@@ -106,8 +106,10 @@ module EventbriteSDK
     private
 
     def coerce_search_orders_params(params)
-      if params[:changed_since] and params[:changed_since].respond_to?(:strftime)
-        params[:changed_since] = params[:changed_since].strftime('%FT%TZ')
+      value = params[:changed_since]
+
+      if value and value.respond_to?(:strftime)
+        params[:changed_since] = value.strftime('%FT%TZ')
       end
 
       for key in %i(exclude_emails only_emails)
