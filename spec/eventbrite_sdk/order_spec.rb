@@ -41,56 +41,6 @@ module EventbriteSDK
       end
     end
 
-    describe '#resend_confirmation_email' do
-      context 'when primary_key exists' do
-        it 'calls save with `resend_confirmation_email`' do
-          order = described_class.new('id' => '1')
-          allow(EventbriteSDK).to receive(:post).and_return('email')
-
-          result = order.resend_confirmation_email
-
-          expect(result).to eq('email')
-          expect(EventbriteSDK).
-            to have_received(:post).
-            with(url: 'orders/1/resend_confirmation_email')
-        end
-      end
-
-      context 'when primary_key is absent' do
-        it 'returns false' do
-          order = described_class.new
-          allow(order).to receive(:save)
-
-          expect(order.resend_confirmation_email).to eq(false)
-        end
-      end
-    end
-
-    describe '#refund' do
-      context 'when primary_key exists' do
-        it 'calls save with the called method name' do
-          order = described_class.new('id' => '1')
-          allow(EventbriteSDK).to receive(:post).and_return('refunds')
-
-          result = order.refund
-
-          expect(result).to eq('refunds')
-          expect(EventbriteSDK).to have_received(:post).with(
-            url: 'orders/1/refunds'
-          )
-        end
-      end
-
-      context 'when primary_key is absent' do
-        it 'returns false' do
-          order = described_class.new
-          allow(order).to receive(:save)
-
-          expect(order.refund).to eq(false)
-        end
-      end
-    end
-
     describe '#attendees' do
       context 'when order is new' do
         it 'instantiates a BlankResourceList' do

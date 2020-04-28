@@ -47,3 +47,21 @@ RSpec::Matchers.define :have_received_request do |method|
     @request_params = params
   end
 end
+
+RSpec::Matchers.define :have_received_get do |method|
+  match do |path|
+    @webmock_get_matcher = WebMock::WebMockMatcher.new(
+      method, "https://www.eventbriteapi.com/v3/#{path}"
+    )
+
+    @webmock_get_matcher.matches?(WebMock)
+  end
+
+  failure_message do |actual|
+    @webmock_get_matcher.failure_message
+  end
+
+  failure_message_when_negated do |actual|
+    @webmock_get_matcher.failure_message_when_negated
+  end
+end

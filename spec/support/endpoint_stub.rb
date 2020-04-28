@@ -19,10 +19,15 @@ module EndpointStub
   #     name:     The name of the fixture file to load.
   #     override: A hash with keys/values to use instead of the default
   #             fixture values.
-  def stub_get(path:, body: {}, fixture: nil)
+  def stub_get(path:, body: {}, fixture: nil, status: 200)
     payload = build_payload_from_fixture(fixture) || body
 
-    stub_endpoint(path: path, method: :get, body: payload)
+    stub_endpoint(
+      body: payload,
+      method: :get,
+      path: path,
+      status: status,
+    )
   end
 
   # Mock a post request endpoint with a specific body, or load a fixture.
@@ -36,14 +41,24 @@ module EndpointStub
   #     name:     The name of the fixture file to load.
   #     override: A hash with keys/values to use instead of the default
   #             fixture values.
-  def stub_post(path:, body: {}, fixture: nil)
+  def stub_post(path:, body: {}, fixture: nil, status: 200)
     payload = build_payload_from_fixture(fixture) || body
 
-    stub_endpoint(path: path, method: :post, body: payload)
+    stub_endpoint(
+      body: payload,
+      method: :post,
+      path: path,
+      status: status,
+    )
   end
 
-  def stub_delete(path: '')
-    stub_endpoint(path: path, method: :delete, body: { 'deleted': true })
+  def stub_delete(path: '', status: 200)
+    stub_endpoint(
+      body: { 'deleted': true },
+      method: :delete,
+      path: path,
+      status: status,
+    )
   end
 
   private
