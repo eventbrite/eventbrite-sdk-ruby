@@ -106,12 +106,21 @@ module EventbriteSDK
     private
 
     def coerce_search_orders_params(params)
+      format_changed_since(params)
+      format_emails(params)
+
+      params
+    end
+
+    def format_changed_since(params)
       value = params[:changed_since]
 
       if value and value.respond_to?(:strftime)
         params[:changed_since] = value.strftime('%FT%TZ')
       end
+    end
 
+    def format_emails(params)
       for key in %i(exclude_emails only_emails)
         if params[key] and params[key].any?
           params[key] = params[key].join(',')
