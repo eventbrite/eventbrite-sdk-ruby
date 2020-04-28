@@ -73,7 +73,7 @@ your_event.publish
 
 EventbriteSDK.token = "TOKEN"
 
-# one feature of the Eventbrite API is that you can pass in the string 'me' in place of a 
+# one feature of the Eventbrite API is that you can pass in the string 'me' in place of a
 # user id and it will evaluate to the id of the user associated with the oauth token.
 
 # fetch a new user record using the Eventbrite user id
@@ -140,7 +140,7 @@ order = EventbriteSDK::Order.retrieve(id: id, expand: [:attendees, :event])
 
 # Per-request Configuration
 
-For apps that need to use multiple tokens during the lifetime of a process, it is 
+For apps that need to use multiple tokens during the lifetime of a process, it is
 possible to set a per-request token:
 
 ``` ruby
@@ -171,7 +171,7 @@ will fall-back on the global token for the action called.
 
 # Shallow resource list endpoints
 
-Some paginated lists are available at the base of the resource url, webhooks and 
+Some paginated lists are available at the base of the resource url, webhooks and
 categories for example. The resources that have this trait will include the `Operations::List` module
 
 ``` ruby

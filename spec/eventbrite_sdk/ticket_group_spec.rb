@@ -140,3 +140,77 @@ module EventbriteSDK
     end
   end
 end
+
+{
+  "venue"=>{
+    "address"=>{
+      "address_1"=>"120 K St.",
+      "address_1": "120 K St.",
+
+      "address_2"=>"second floor",
+      "address_2": "second floor",
+
+      "city"=>"Sacramento",
+      "city": "Sacramento",
+
+      "country"=>"US",
+      "country": "US",
+
+      "latitude"=>"100.0",
+      "latitude": "100.0",
+
+      "localized_address_display"=>"local1",
+      "localized_address_display": "local1",
+
+      "localized_area_display"=>"local2",
+      "localized_area_display": "local2",
+
+      "longitude"=>"200.0",
+      "longitude": "200.0",
+
+      "postal_code"=>"95843",
+      "postal_code": "95843",
+
+      "region"=>"CA"
+      "region": "CA"
+    },
+    "age_restriction"=>"18+",
+    "age_restriction": "18+",
+
+    "capacity"=>1000,
+    "capacity": 1000,
+
+    "latitude"=>"ima lat",
+    "latitude": "ima lat",
+
+    "longitude"=>"well ima lon",
+    "longitude": "well ima lon",
+
+    "name"=>"Old Building"
+    "name": "Old Building"
+  }
+} was expected to execute 1 time but it executed 0 times
+
+
+{
+  "venue":{
+    "address":{
+      "address_1":"120 K St.",
+      "address_2":"second floor",
+      "city":"Sacramento",
+      "country":"US",
+      "latitude":"100.0",
+      "localized_address_display":"local1",
+      "localized_area_display":"local2",
+      "longitude":"200.0",
+      "postal_code":"95843",
+      "region":"CA"
+    },
+    "age_restriction":"18+",
+    "capacity":1000,
+    "latitude":"ima lat",
+    "longitude":"well ima lon",
+    "name":"Old Building"
+  }
+} with headers {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip, deflate', 'Authorization'=>'Bearer token', 'Content-Length'=>'365', 'Content-Type'=>'application/json', 'Host'=>'www.eventbriteapi.com', 'User-Agent'=>'rest-client/2.0.2 (darwin18.7.0 x86_64) ruby/2.7.0p0'} was made 1 time
+

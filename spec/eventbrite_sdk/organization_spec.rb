@@ -1,4 +1,7 @@
+require 'erb'
 require 'spec_helper'
+
+include ERB::Util
 
 module EventbriteSDK
   RSpec.describe Organization do
@@ -84,23 +87,129 @@ module EventbriteSDK
 
     describe '#search_orders' do
       it 'returns correctly instantiated ResourceList' do
-        subject = described_class.new(id: 'id')
+        stub_get(
+          path: 'organizations/8675309/orders/?page=1',
+          body: {
+            orders: [{ id: '8675309' }]
+          }
+        )
+
+        subject = described_class.new(id: '8675309')
 
         allow(EventbriteSDK::ResourceList).
           to receive(:new).and_call_original
 
-        subject.search_orders('whoa')
+        list = subject.search_orders
 
         expect(EventbriteSDK::ResourceList).
           to have_received(:new).
           with({
-            url_base: 'organizations/id/orders/search',
+            url_base: 'organizations/8675309/orders',
             object_class: EventbriteSDK::Order,
             key: :orders,
-            query: {
-              search_term: 'whoa'
-            }
+            query: {}
           })
+
+        result = list.page(1).map{ |order| order.id }
+
+        expect(result).to eq(['8675309'])
+      end
+
+      it 'supports changed_since as a string' do
+        stub_get(
+          path: 'organizations/8675309/orders/?page=1&changed_since=2010-01-31T13:00:00Z',
+          body: {
+            orders: [{ id: '8675309' }]
+          }
+        )
+
+        subject = described_class.new(id: '8675309')
+
+        result = subject.search_orders(changed_since: '2010-01-31T13:00:00Z').page(1)
+
+        result = result.map{ |order| order.id }
+
+        expect(result).to eq(['8675309'])
+      end
+
+      it 'supports changed since as a datetime object' do
+        now = Time.now()
+
+        formatted = now.strftime('%FT%TZ')
+
+        stub_get(
+          path: "organizations/8675309/orders/?changed_since=#{formatted}&page=1",
+          body: {
+            orders: [{ id: '8675309' }]
+          }
+        )
+
+        subject = described_class.new(id: '8675309')
+
+        result = subject.search_orders(changed_since: now).page(1)
+
+        result = result.map{ |order| order.id }
+
+        expect(result).to eq(['8675309'])
+      end
+
+      it 'supports exclude_emails' do
+        emails = ['joe@camel.org','a@b.com']
+        encoded = emails.join(',')
+        encoded = url_encode(encoded)
+
+        stub_get(
+          path: "organizations/8675309/orders/?exclude_emails=#{encoded}&page=1",
+          body: {
+            orders: [{ id: '8675309' }]
+          }
+        )
+
+        subject = described_class.new(id: '8675309')
+
+        result = subject.search_orders(exclude_emails: emails).page(1)
+
+        result = result.map{ |order| order.id }
+
+        expect(result).to eq(['8675309'])
+      end
+
+      it 'supports only_emails' do
+        emails = ['joe@camel.org','a@b.com']
+        encoded = emails.join(',')
+        encoded = url_encode(encoded)
+
+        stub_get(
+          path: "organizations/8675309/orders/?only_emails=#{encoded}&page=1",
+          body: {
+            orders: [{ id: '8675309' }]
+          }
+        )
+
+        subject = described_class.new(id: '8675309')
+
+        result = subject.search_orders(only_emails: emails).page(1)
+
+        result = result.map{ |order| order.id }
+
+        expect(result).to eq(['8675309'])
+      end
+
+      it 'supports status' do
+        stub_get(
+          path: "organizations/8675309/orders/?status=LOUD_NOISES&page=1",
+          body: {
+            orders: [{ id: '8675309' }]
+          }
+        )
+
+        subject = described_class.new(id: '8675309')
+
+        result = subject.search_orders(status: 'LOUD_NOISES').page(1)
+
+        result = result.map{ |order| order.id }
+
+        expect(result).to eq(['8675309'])
       end
     end
 

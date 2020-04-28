@@ -4,19 +4,22 @@ module EventbriteSDK
 
     attributes_prefix 'venue'
 
-    belongs_to :organizer, object_class: 'Organizer'
-
     schema_definition do
-      string 'name'
-      string 'address.latitude'
-      string 'address.longitude'
-      string 'organizer_id'
       string 'address.address_1'
       string 'address.address_2'
       string 'address.city'
-      string 'address.region'
-      string 'address.postal_code'
       string 'address.country'
+      string 'address.latitude' # decimal, passed as string.
+      string 'address.localized_address_display'
+      string 'address.localized_area_display'
+      string 'address.longitude' # decimal, passed as string.
+      string 'address.postal_code'
+      string 'address.region'
+      string 'age_restriction'
+      string 'capacity'
+      string 'latitude'
+      string 'longitude'
+      string 'name'
     end
   end
 end

@@ -30,6 +30,12 @@ module EventbriteSDK
     LIVE = 'live',
     STARTED = 'started'
 
+    # Search order values
+    SEARCH_ORDERS_STATUS_ALL = 'all_not_deleted'
+    SEARCH_ORDERS_STATUS_ACTIVE = 'active'
+    SEARCH_ORDERS_STATUS_INACTIVE = 'inactive'
+    SEARCH_ORDERS_STATUS_ACTIVE_AND_INACTIVE = 'both'
+
     resource_path 'organizations/:id'
 
     has_many :discounts, object_class: 'OrgDiscount'
@@ -69,20 +75,46 @@ module EventbriteSDK
       )
     end
 
-    def search_orders(query)
+    #
+    # Retrieve all orders for the organization based on given search criteria.
+    # changed_since  - datetime - orders changed on or after the given datetime.
+    #                  You can also pass a string formatted as %FT%TZ
+    # exclude_emails - string array - do not include orders for these emails
+    # only_emails    - string array - only include orders for these emails
+    # status         - One of: all, active, inactive, active_and_inactive
+    #
+    # This method does no parameter validation. If you pass an unsupported status
+    # or an invalid format changed_since you'll definitely hear about if from
+    # the endpoint.
+    #
+    def search_orders(params={})
+      coerce_search_orders_params(params)
+
       EventbriteSDK::ResourceList.new(
-        url_base: "#{path}/orders/search",
+        url_base: "#{path}/orders",
         object_class: EventbriteSDK::Order,
         key: :orders,
-        query: {
-          search_term: query
-        }
+        query: params
       )
     end
 
     # NOTE Shim to normalize API between a user/organization
     def owned_events
       events
+    end
+
+    private
+
+    def coerce_search_orders_params(params)
+      if params[:changed_since] and params[:changed_since].respond_to?(:strftime)
+        params[:changed_since] = params[:changed_since].strftime('%FT%TZ')
+      end
+
+      for key in %i(exclude_emails only_emails)
+        if params[key] and params[key].any?
+          params[key] = params[key].join(',')
+        end
+      end
     end
   end
 end

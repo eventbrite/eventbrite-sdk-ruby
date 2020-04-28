@@ -10,67 +10,21 @@ module EventbriteSDK
       end
     end
 
-    describe '#verify' do
-      context 'when id exists' do
-        it 'calls save with `verify`' do
-          user = described_class.new('id' => '1')
-          allow(EventbriteSDK).to receive(:post)
+    describe '#owned_event_orders' do
+      it 'requests the users orders and returns them' do
+        subject = described_class.new(id: '123')
 
-          user.verify
+        stub_get(
+          path: 'users/123/owned_event_orders/?page=1',
+          body: {
+            orders: [{ id: 'e' }]
+          }
+        )
 
-          expect(EventbriteSDK).
-            to have_received(:post).
-            with(url: 'users/1/verify')
-        end
-      end
+        list = subject.owned_event_orders.page(1)
+        result = list.map { |order| order.id }
 
-      context 'when id is absent' do
-        it 'returns false' do
-          user = described_class.new
-          allow(user).to receive(:save)
-
-          expect(user.verify).to eq(false)
-        end
-      end
-    end
-
-    describe '#ticket_groups' do
-      it 'returns a new Resource list with a proper url_base' do
-        allow(ResourceList).to receive(:new)
-
-        described_class.new(id: '1').ticket_groups
-
-        expect(ResourceList).
-          to have_received(:new).
-          with(
-            url_base: 'users/1/ticket_groups',
-             object_class: TicketGroup,
-             key: :ticket_groups
-           )
-      end
-    end
-
-    describe '#unverify' do
-      context 'when id exists' do
-        it 'calls save with `unverify`' do
-          user = described_class.new('id' => '1')
-          allow(EventbriteSDK).to receive(:post)
-
-          user.unverify
-
-          expect(EventbriteSDK).
-            to have_received(:post).
-            with(url: 'users/1/unverify')
-        end
-      end
-
-      context 'when id is absent' do
-        it 'returns false' do
-          user = described_class.new
-          allow(user).to receive(:save)
-
-          expect(user.unverify).to eq(false)
-        end
+        expect(result).to eq(['e'])
       end
     end
   end
