@@ -16,6 +16,23 @@ module EventbriteSDK
       end
     end
 
+    describe '#address' do
+      it 'defines an address field with the given attributes' do
+        subject.address('foo')
+
+        expect(subject.type('foo.address_1')).to eq(:string)
+        expect(subject.type('foo.address_2')).to eq(:string)
+        expect(subject.type('foo.city')).to eq(:string)
+        expect(subject.type('foo.country')).to eq(:string)
+        expect(subject.type('foo.latitude')).to eq(:string)
+        expect(subject.type('foo.localized_address_display')).to eq(:string)
+        expect(subject.type('foo.localized_area_display')).to eq(:string)
+        expect(subject.type('foo.longitude')).to eq(:string)
+        expect(subject.type('foo.postal_code')).to eq(:string)
+        expect(subject.type('foo.region')).to eq(:string)
+      end
+    end
+
     describe '#type' do
       context 'when key exists' do
         it "returns it's type" do
