@@ -9,6 +9,7 @@ module EventbriteSDK
       end
 
       %i[
+        address
         boolean
         currency
         datetime
@@ -56,6 +57,24 @@ module EventbriteSDK
       # The following fields are NO-OP expansions
       %i[boolean integer multipart string utc].each do |type|
         define_method("#{type}_expansion") { |val| }
+      end
+
+      def address_expansion(value)
+        generic_expansion(
+          %w[
+            address_1
+            address_2
+            city
+            country
+            latitude
+            localized_address_display
+            localized_area_display
+            longitude
+            postal_code
+            region
+          ],
+          value,
+        )
       end
 
       def currency_expansion(value)
