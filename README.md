@@ -75,15 +75,20 @@ EventbriteSDK.token = "TOKEN"
 
 # one feature of the Eventbrite API is that you can pass in the string 'me' in place of a
 # user id and it will evaluate to the id of the user associated with the oauth token.
+user = EventbriteSDK::User.retrieve(id: 'me')
 
-# fetch a new user record using the Eventbrite user id
+# or fetch a new user record using the Eventbrite user id
 user = EventbriteSDK::User.retrieve(id: 163054428874)
 
-# get one page of your events
-events = user.owned_events.page(2)
+# then fetch the user's organizations
+organizations = user.organizations
+
+# you can now fetch events per organization
+organization = organizations[0]
+events = organization.events.page(1)
 
 # not providing a page number will default to page one
-events = user.owned_events.page(1) => events = user.owned_events
+events = organization.events.page(1) => events = organization.events
 
 # events is now an enumerable object that you can access using bracket notation or first/last
 events.first => events[0]
@@ -108,7 +113,8 @@ example.continue(continuation_token: 'my_token')
 # For example, to use the 'status' parameter seen here: https://www.eventbrite.com/developer/v3/endpoints/events/#ebapi-id78
 
 user = EventbriteSDK::User.retrieve(id: 163054428874)
-user.owned_events.retrieve(query: { status: 'live' })
+organization = user.organizations.first
+organization.events.retrieve(query: { status: 'live' })
 
 ```
 
