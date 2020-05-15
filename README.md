@@ -80,11 +80,8 @@ user = EventbriteSDK::User.retrieve(id: 'me')
 # or fetch a new user record using the Eventbrite user id
 user = EventbriteSDK::User.retrieve(id: 163054428874)
 
-# then fetch the user's organizations
-organizations = user.organizations
-
 # you can now fetch events per organization
-organization = organizations[0]
+organization = user.organizations.page(1).first
 events = organization.events.page(1)
 
 # not providing a page number will default to page one
