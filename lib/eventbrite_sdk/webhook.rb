@@ -2,7 +2,9 @@ module EventbriteSDK
   class Webhook < Resource
     extend Operations::List
 
-    resource_path 'webhooks/:id'
+    resource_path 'organizations/:organization_id/webhooks/:id'
+
+    belongs_to :organization, object_class: 'Organization'
 
     schema_definition do
       string 'endpoint_url'
