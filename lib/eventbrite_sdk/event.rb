@@ -23,6 +23,7 @@ module EventbriteSDK
 
     belongs_to :organizer, object_class: 'Organizer'
     belongs_to :venue, object_class: 'Venue'
+    belongs_to :organization, object_class: 'Organization'
 
     has_many :orders, object_class: 'Order'
     has_many :attendees, object_class: 'Attendee'
