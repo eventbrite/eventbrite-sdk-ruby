@@ -1,7 +1,8 @@
 module EventbriteSDK
   class Attendee < Resource
-    resource_path 'orders/:order_id/attendees/:id'
+    resource_path 'orders/:event_id/attendees/:id'
 
+    belongs_to :event, object_class: 'Event'
     belongs_to :order, object_class: 'Order'
 
     has_many :attendees, object_class: 'Attendee'
